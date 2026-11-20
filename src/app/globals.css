@@ -1,0 +1,135 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Theme for Almacén "Rey Dani".
+ * Light only, on purpose: one palette is easier to keep consistent.
+ * Colors are plain hex so they are easy to read and change:
+ *   green  = the store awning (sidebar, primary buttons)
+ *   yellow = the price tag (small highlights)
+ *   the "aguayo" stripe = the Bolivian woven cloth, used as the brand mark
+ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-numbers);
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-tag: var(--tag);
+  --color-tag-foreground: var(--tag-foreground);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #f5f6f2;
+  --foreground: #1b2420;
+  --card: #ffffff;
+  --card-foreground: #1b2420;
+  --popover: #ffffff;
+  --popover-foreground: #1b2420;
+  --primary: #1f6b4f;
+  --primary-foreground: #ffffff;
+  --secondary: #e8ede6;
+  --secondary-foreground: #1b2420;
+  --muted: #eef1ec;
+  --muted-foreground: #5c6962;
+  --accent: #e3efe8;
+  --accent-foreground: #164d39;
+  --destructive: #b93a2b;
+  --border: #dde2da;
+  --input: #d3d9d0;
+  --ring: #1f6b4f;
+  --tag: #f6c63c;
+  --tag-foreground: #3d2f00;
+  --chart-1: #1f6b4f;
+  --chart-2: #e0a21b;
+  --chart-3: #b3306a;
+  --chart-4: #2f6fb0;
+  --chart-5: #c2552d;
+  --radius: 0.5rem;
+  --sidebar: #143f30;
+  --sidebar-foreground: #e6efe9;
+  --sidebar-primary: #f6c63c;
+  --sidebar-primary-foreground: #2a2000;
+  --sidebar-accent: #1d5340;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #24543f;
+  --sidebar-ring: #f6c63c;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Brand mark: a thin band inspired by the Bolivian aguayo cloth. */
+.aguayo-stripe {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    #b3306a 0 14px,
+    #f6c63c 14px 22px,
+    #1f6b4f 22px 36px,
+    #c2552d 36px 42px,
+    #2f6fb0 42px 54px,
+    #f6c63c 54px 58px
+  );
+}
+
+/* Printable receipts (used later by invoices and payment receipts). */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff;
+  }
+}

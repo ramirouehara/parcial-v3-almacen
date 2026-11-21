@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { SearchBox } from "@/components/common/search-box";
-import { EmptyState } from "@/components/common/states";
-import { ActiveBadge } from "@/components/common/status-badge";
-import { UrlSelect } from "@/components/common/url-select";
-import { BalanceText } from "@/components/customers/balance-text";
-import { CustomerActions } from "@/components/customers/customer-actions";
-import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
-import { CustomersTabs } from "@/components/customers/customers-tabs";
-import { Row, Stack, Text } from "@/components/layout/primitives";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { SearchBox } from "@/components/comunes/buscador";
+import { EmptyState } from "@/components/comunes/estados";
+import { ActiveBadge } from "@/components/comunes/etiqueta-estado";
+import { UrlSelect } from "@/components/comunes/filtro-url";
+import { BalanceText } from "@/components/clientes/saldo";
+import { CustomerActions } from "@/components/clientes/acciones-cliente";
+import { CustomerFormDialog } from "@/components/clientes/dialogo-cliente";
+import { CustomersTabs } from "@/components/clientes/pestanas-clientes";
+import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDocument } from "@/lib/format";
-import { requirePageUser } from "@/lib/session";
-import { listCustomers } from "@/services/customers";
+import { formatDocument } from "@/lib/formato";
+import { requirePageUser } from "@/lib/sesion";
+import { listCustomers } from "@/servicios/clientes";
 
 export const metadata: Metadata = { title: "Clientes" };
 

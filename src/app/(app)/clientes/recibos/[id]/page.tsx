@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Logo } from "@/components/common/logo";
-import { PrintButton } from "@/components/common/print-button";
-import { Row, Stack, Text, Title } from "@/components/layout/primitives";
+import { Logo } from "@/components/comunes/logo";
+import { PrintButton } from "@/components/comunes/boton-imprimir";
+import { Row, Stack, Text, Title } from "@/components/maquetacion/primitivas";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { formatDateTime, formatDocument, formatMoney } from "@/lib/format";
-import { medioPagoLabels } from "@/lib/labels";
-import { requirePageUser } from "@/lib/session";
-import { STORE } from "@/lib/store";
-import { getPayment } from "@/services/payments";
+import { formatDateTime, formatDocument, formatMoney } from "@/lib/formato";
+import { medioPagoLabels } from "@/lib/etiquetas";
+import { requirePageUser } from "@/lib/sesion";
+import { STORE } from "@/lib/comercio";
+import { getPayment } from "@/servicios/pagos";
 
 export const metadata: Metadata = { title: "Recibo" };
 

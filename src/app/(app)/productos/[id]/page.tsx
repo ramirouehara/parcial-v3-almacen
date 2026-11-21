@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Minus, Plus } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { EmptyState } from "@/components/common/states";
-import { ActiveBadge } from "@/components/common/status-badge";
-import { Grid, Row, Stack, Text, Title } from "@/components/layout/primitives";
-import { MovementsTable } from "@/components/products/movements-table";
-import { ProductActions } from "@/components/products/product-actions";
-import { StockCell } from "@/components/products/stock-cell";
-import { StockMovementDialog } from "@/components/products/stock-movement-dialog";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { EmptyState } from "@/components/comunes/estados";
+import { ActiveBadge } from "@/components/comunes/etiqueta-estado";
+import { Grid, Row, Stack, Text, Title } from "@/components/maquetacion/primitivas";
+import { MovementsTable } from "@/components/productos/tabla-movimientos";
+import { ProductActions } from "@/components/productos/acciones-producto";
+import { StockCell } from "@/components/productos/celda-stock";
+import { StockMovementDialog } from "@/components/productos/dialogo-movimiento-stock";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatMoney } from "@/lib/format";
-import { requirePageUser } from "@/lib/session";
-import { listCategories } from "@/services/categories";
-import { getProduct } from "@/services/products";
-import { listProductMovements } from "@/services/stock";
+import { formatMoney } from "@/lib/formato";
+import { requirePageUser } from "@/lib/sesion";
+import { listCategories } from "@/servicios/categorias";
+import { getProduct } from "@/servicios/productos";
+import { listProductMovements } from "@/servicios/stock";
 
 export const metadata: Metadata = { title: "Producto" };
 

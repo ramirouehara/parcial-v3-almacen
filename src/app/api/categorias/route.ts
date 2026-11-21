@@ -1,6 +1,6 @@
 // GET /api/categorias (ambos roles) y POST /api/categorias (admin) — RF-P7.
 import { route } from "@/lib/api";
-import { createCategory, listCategories } from "@/services/categories";
+import { createCategory, listCategories } from "@/servicios/categorias";
 
 export const GET = route(async ({ user, query }) => listCategories(user, query));
 

@@ -1,4 +1,4 @@
-import { Stack } from "@/components/layout/primitives";
+import { Stack } from "@/components/maquetacion/primitivas";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Estado "cargando" (§8): Next muestra esto solo mientras una página de

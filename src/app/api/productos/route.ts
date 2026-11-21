@@ -1,6 +1,6 @@
 // GET /api/productos (ambos roles, RF-P1) y POST /api/productos (admin, RF-P2).
 import { route } from "@/lib/api";
-import { createProduct, listProducts } from "@/services/products";
+import { createProduct, listProducts } from "@/servicios/productos";
 
 export const GET = route(async ({ user, query }) => listProducts(user, query));
 

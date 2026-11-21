@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { ChangePasswordForm } from "@/components/auth/change-password-form";
-import { PageHeader } from "@/components/common/page-header";
-import { requirePageUser } from "@/lib/session";
+import { ChangePasswordForm } from "@/components/autenticacion/form-cambiar-contrasena";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { requirePageUser } from "@/lib/sesion";
 
 export const metadata: Metadata = { title: "Mi perfil" };
 

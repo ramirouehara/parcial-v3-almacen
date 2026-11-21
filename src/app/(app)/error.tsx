@@ -1,6 +1,6 @@
 "use client";
 
-import { ErrorState } from "@/components/common/states";
+import { ErrorState } from "@/components/comunes/estados";
 import { Button } from "@/components/ui/button";
 
 // Estado "error" (§8): si una página de (app) falla, Next muestra esto en vez de

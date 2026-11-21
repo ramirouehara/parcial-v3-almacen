@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { Plus } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { SearchBox } from "@/components/common/search-box";
-import { EmptyState, ForbiddenState } from "@/components/common/states";
-import { ActiveBadge, RoleBadge } from "@/components/common/status-badge";
-import { UrlSelect } from "@/components/common/url-select";
-import { Row, Stack, Text } from "@/components/layout/primitives";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { SearchBox } from "@/components/comunes/buscador";
+import { EmptyState, ForbiddenState } from "@/components/comunes/estados";
+import { ActiveBadge, RoleBadge } from "@/components/comunes/etiqueta-estado";
+import { UrlSelect } from "@/components/comunes/filtro-url";
+import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { UserActions } from "@/components/users/user-actions";
-import { UserFormDialog } from "@/components/users/user-form-dialog";
-import { requirePageUser } from "@/lib/session";
-import { listUsers } from "@/services/users";
+import { UserActions } from "@/components/usuarios/acciones-usuario";
+import { UserFormDialog } from "@/components/usuarios/dialogo-usuario";
+import { requirePageUser } from "@/lib/sesion";
+import { listUsers } from "@/servicios/usuarios";
 
 export const metadata: Metadata = { title: "Usuarios" };
 

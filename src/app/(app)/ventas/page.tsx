@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { DateRangeFilter } from "@/components/common/date-range-filter";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { SearchBox } from "@/components/common/search-box";
-import { EmptyState } from "@/components/common/states";
-import { UrlSelect } from "@/components/common/url-select";
-import { Row, Stack, Text } from "@/components/layout/primitives";
+import { DateRangeFilter } from "@/components/comunes/filtro-fechas";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { SearchBox } from "@/components/comunes/buscador";
+import { EmptyState } from "@/components/comunes/estados";
+import { UrlSelect } from "@/components/comunes/filtro-url";
+import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDateTime, formatMoney } from "@/lib/format";
-import { formaPagoLabels } from "@/lib/labels";
-import { requirePageUser } from "@/lib/session";
-import { listInvoices, listSellers } from "@/services/invoices";
+import { formatDateTime, formatMoney } from "@/lib/formato";
+import { formaPagoLabels } from "@/lib/etiquetas";
+import { requirePageUser } from "@/lib/sesion";
+import { listInvoices, listSellers } from "@/servicios/facturas";
 
 export const metadata: Metadata = { title: "Ventas" };
 

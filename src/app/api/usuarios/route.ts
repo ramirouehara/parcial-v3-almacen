@@ -1,6 +1,6 @@
 // GET /api/usuarios y POST /api/usuarios (RF-U4). Solo admin.
 import { route } from "@/lib/api";
-import { createUser, listUsers } from "@/services/users";
+import { createUser, listUsers } from "@/servicios/usuarios";
 
 export const GET = route(async ({ user, query }) => listUsers(user, query));
 

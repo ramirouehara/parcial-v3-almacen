@@ -11,9 +11,9 @@
  *   export const GET = route(({ user, query }) => listUsers(user, query));
  */
 import type { NextRequest } from "next/server";
-import type { AuthUser } from "@/services/permissions";
-import { ApiError, toApiError, unauthenticated } from "./errors";
-import { getSessionUser } from "./session";
+import type { AuthUser } from "@/servicios/permisos";
+import { ApiError, toApiError, unauthenticated } from "./errores";
+import { getSessionUser } from "./sesion";
 
 type Context<P> = {
   user: AuthUser;

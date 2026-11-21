@@ -1,5 +1,5 @@
-import { AppShell } from "@/components/shell/app-shell";
-import { requirePageUser } from "@/lib/session";
+import { AppShell } from "@/components/marco/marco-app";
+import { requirePageUser } from "@/lib/sesion";
 
 /**
  * Layout de todas las pantallas de ADENTRO del sistema (§4): panel lateral + barra superior.

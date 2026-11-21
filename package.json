@@ -11,8 +11,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx --env-file-if-exists=.env src/db/seed.ts",
-    "db:check": "tsx --env-file-if-exists=.env src/db/check.ts",
+    "db:seed": "tsx --env-file-if-exists=.env src/db/datos-prueba.ts",
+    "db:check": "tsx --env-file-if-exists=.env src/db/control.ts",
     "test": "vitest run"
   },
   "dependencies": {

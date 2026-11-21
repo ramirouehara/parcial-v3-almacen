@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { Plus } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
-import { EmptyState } from "@/components/common/states";
-import { ActiveBadge } from "@/components/common/status-badge";
-import { Stack, Text } from "@/components/layout/primitives";
-import { CategoryActions } from "@/components/products/category-actions";
-import { CategoryFormDialog } from "@/components/products/category-form-dialog";
-import { ProductsTabs } from "@/components/products/products-tabs";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { EmptyState } from "@/components/comunes/estados";
+import { ActiveBadge } from "@/components/comunes/etiqueta-estado";
+import { Stack, Text } from "@/components/maquetacion/primitivas";
+import { CategoryActions } from "@/components/productos/acciones-categoria";
+import { CategoryFormDialog } from "@/components/productos/dialogo-categoria";
+import { ProductsTabs } from "@/components/productos/pestanas-productos";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { requirePageUser } from "@/lib/session";
-import { listCategories } from "@/services/categories";
+import { requirePageUser } from "@/lib/sesion";
+import { listCategories } from "@/servicios/categorias";
 
 export const metadata: Metadata = { title: "Categorías" };
 

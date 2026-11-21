@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { DateRangeFilter } from "@/components/common/date-range-filter";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { EmptyState } from "@/components/common/states";
-import { UrlSelect } from "@/components/common/url-select";
-import { Row, Stack } from "@/components/layout/primitives";
-import { MovementsTable } from "@/components/products/movements-table";
-import { ProductsTabs } from "@/components/products/products-tabs";
-import { requirePageUser } from "@/lib/session";
-import { listMovements } from "@/services/stock";
+import { DateRangeFilter } from "@/components/comunes/filtro-fechas";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { EmptyState } from "@/components/comunes/estados";
+import { UrlSelect } from "@/components/comunes/filtro-url";
+import { Row, Stack } from "@/components/maquetacion/primitivas";
+import { MovementsTable } from "@/components/productos/tabla-movimientos";
+import { ProductsTabs } from "@/components/productos/pestanas-productos";
+import { requirePageUser } from "@/lib/sesion";
+import { listMovements } from "@/servicios/stock";
 
 export const metadata: Metadata = { title: "Existencias" };
 

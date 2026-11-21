@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { EmptyState } from "@/components/common/states";
-import { BalanceText } from "@/components/customers/balance-text";
-import { CustomersTabs } from "@/components/customers/customers-tabs";
-import { Row, Stack, Text } from "@/components/layout/primitives";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { EmptyState } from "@/components/comunes/estados";
+import { BalanceText } from "@/components/clientes/saldo";
+import { CustomersTabs } from "@/components/clientes/pestanas-clientes";
+import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDocument, formatMoney } from "@/lib/format";
-import { requirePageUser } from "@/lib/session";
-import { listCustomers } from "@/services/customers";
+import { formatDocument, formatMoney } from "@/lib/formato";
+import { requirePageUser } from "@/lib/sesion";
+import { listCustomers } from "@/servicios/clientes";
 
 export const metadata: Metadata = { title: "Saldos" };
 

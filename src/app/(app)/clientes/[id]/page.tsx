@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, HandCoins } from "lucide-react";
-import { DateRangeFilter } from "@/components/common/date-range-filter";
-import { PageHeader } from "@/components/common/page-header";
-import { EmptyState } from "@/components/common/states";
-import { ActiveBadge } from "@/components/common/status-badge";
-import { BalanceText } from "@/components/customers/balance-text";
-import { CustomerActions } from "@/components/customers/customer-actions";
-import { PaymentDialog } from "@/components/customers/payment-dialog";
-import { Grid, Row, Stack, Text, Title } from "@/components/layout/primitives";
+import { DateRangeFilter } from "@/components/comunes/filtro-fechas";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { EmptyState } from "@/components/comunes/estados";
+import { ActiveBadge } from "@/components/comunes/etiqueta-estado";
+import { BalanceText } from "@/components/clientes/saldo";
+import { CustomerActions } from "@/components/clientes/acciones-cliente";
+import { PaymentDialog } from "@/components/clientes/dialogo-pago";
+import { Grid, Row, Stack, Text, Title } from "@/components/maquetacion/primitivas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDate, formatDateTime, formatDocument, formatMoney } from "@/lib/format";
-import { formaPagoLabels } from "@/lib/labels";
-import { requirePageUser } from "@/lib/session";
-import { getAccount, getCustomer } from "@/services/customers";
+import { formatDate, formatDateTime, formatDocument, formatMoney } from "@/lib/formato";
+import { formaPagoLabels } from "@/lib/etiquetas";
+import { requirePageUser } from "@/lib/sesion";
+import { getAccount, getCustomer } from "@/servicios/clientes";
 
 export const metadata: Metadata = { title: "Cliente" };
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { LoginForm } from "@/components/auth/login-form";
-import { Logo } from "@/components/common/logo";
-import { Stack, Text, Title } from "@/components/layout/primitives";
+import { LoginForm } from "@/components/autenticacion/form-login";
+import { Logo } from "@/components/comunes/logo";
+import { Stack, Text, Title } from "@/components/maquetacion/primitivas";
 
 export const metadata: Metadata = { title: "Iniciar sesión" };
 

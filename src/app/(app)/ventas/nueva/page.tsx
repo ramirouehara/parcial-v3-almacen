@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/common/page-header";
-import { SaleForm } from "@/components/sales/sale-form";
-import { requirePageUser } from "@/lib/session";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { SaleForm } from "@/components/ventas/formulario-venta";
+import { requirePageUser } from "@/lib/sesion";
 
 export const metadata: Metadata = { title: "Nueva venta" };
 

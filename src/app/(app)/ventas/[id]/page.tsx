@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { Logo } from "@/components/common/logo";
-import { PrintButton } from "@/components/common/print-button";
-import { Row, Stack, Text, Title } from "@/components/layout/primitives";
-import { CancelInvoiceDialog } from "@/components/sales/cancel-invoice-dialog";
+import { Logo } from "@/components/comunes/logo";
+import { PrintButton } from "@/components/comunes/boton-imprimir";
+import { Row, Stack, Text, Title } from "@/components/maquetacion/primitivas";
+import { CancelInvoiceDialog } from "@/components/ventas/dialogo-anular-factura";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatDateTime, formatDocument, formatMoney } from "@/lib/format";
-import { formaPagoLabels, tarjetaTipoLabels } from "@/lib/labels";
-import { requirePageUser } from "@/lib/session";
-import { STORE } from "@/lib/store";
-import { getInvoice } from "@/services/invoices";
+import { formatDateTime, formatDocument, formatMoney } from "@/lib/formato";
+import { formaPagoLabels, tarjetaTipoLabels } from "@/lib/etiquetas";
+import { requirePageUser } from "@/lib/sesion";
+import { STORE } from "@/lib/comercio";
+import { getInvoice } from "@/servicios/facturas";
 
 export const metadata: Metadata = { title: "Factura" };
 

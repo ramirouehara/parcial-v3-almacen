@@ -7,7 +7,7 @@
  * La API queda afuera: su envoltorio (src/lib/api.ts) responde 401 en JSON.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE, verifySession } from "@/lib/session-token";
+import { SESSION_COOKIE, verifySession } from "@/lib/token-sesion";
 
 export async function proxy(request: NextRequest) {
   const userId = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);

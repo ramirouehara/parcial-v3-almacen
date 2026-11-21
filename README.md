@@ -63,7 +63,7 @@ Están documentadas en `.env.example`. Los secretos van solo en variables de ent
 | --- | --- |
 | `pnpm run dev` | Servidor de desarrollo |
 | `pnpm run build` / `pnpm start` | Compilación y servidor de producción |
-| `pnpm run db:generate` | Genera una migración nueva a partir de `src/db/schema.ts` |
+| `pnpm run db:generate` | Genera una migración nueva a partir de `src/db/esquema.ts` |
 | `pnpm run db:migrate` | Aplica las migraciones a la base de `DATABASE_URL` |
 | `pnpm run db:seed` | Vacía la base y carga los datos de prueba |
 | `pnpm run db:check` | Controla la consistencia de los datos: existencia = suma de movimientos, numeración sin huecos, sin saldos a favor, totales |
@@ -81,33 +81,33 @@ src/
 ├── app/                 páginas (App Router) y API REST (app/api/**/route.ts)
 │   ├── (app)/           pantallas internas: comparten el layout con panel lateral
 │   └── login/           la única página pública
-├── actions/             Server Actions (adaptadores de los formularios)
-├── services/            TODAS las reglas de negocio (una por módulo)
-├── schemas/             esquemas Zod, compartidos entre formulario y servidor
-├── db/                  esquema, conexión, migraciones, seed y control de consistencia
+├── acciones/            Server Actions (adaptadores de los formularios)
+├── servicios/           TODAS las reglas de negocio (una por módulo)
+├── esquemas/            esquemas Zod, compartidos entre formulario y servidor
+├── db/                  esquema, conexión, migraciones, datos de prueba y control de consistencia
 ├── lib/                 errores, sesión, envoltorios de rutas y acciones, formatos
 ├── hooks/               useForm: el hook común de formularios
 └── components/          interfaz: primitivas, shadcn/ui y componentes por módulo
 tests/                   tests de formatos, esquemas y servicios
 ```
 
-El principio que ordena todo (§10): **cada regla de negocio vive en un único lugar, la capa de servicios**. Las rutas de la API y las Server Actions son adaptadores finos que solo llaman al servicio. La guía de defensa ([docs/guia-defensa.md](docs/guia-defensa.md)) dice en qué archivo y línea está cada cosa.
+El principio que ordena todo (§10): **cada regla de negocio vive en un único lugar, la capa de servicios (`src/servicios/`)**. Las rutas de la API y las Server Actions son adaptadores finos que solo llaman al servicio. La guía de defensa ([docs/guia-defensa.md](docs/guia-defensa.md)) dice en qué archivo y línea está cada cosa.
 
 ## Decisiones de diseño
 
-- **Importes en centavos enteros** (regla 10). `1250000` son $ 12.500,00. Los formatos están en un único módulo: `src/lib/format.ts`.
+- **Importes en centavos enteros** (regla 10). `1250000` son $ 12.500,00. Los formatos están en un único módulo: `src/lib/formato.ts`.
 - **La existencia se guarda** en `productos.existencia` y **solo cambia con `moverStock()`**, que actualiza con la condición `existencia + cantidad >= 0` y graba el movimiento en la misma transacción. Además, la base tiene un `CHECK (existencia >= 0)` como última defensa.
 - **El saldo del cliente no se guarda**: siempre son los débitos menos los créditos de `movimientos_cuenta` (regla 7). Una sola fuente de verdad.
 - **Numeración**: el número de factura y el de recibo se asignan como «último + 1» **dentro de la transacción de escritura**, así no quedan huecos ni números repetidos. Hay además un índice único sobre punto de venta y número.
-- **Ventas simultáneas**: dos vendedores que venden la última unidad al mismo tiempo terminan con una sola factura; la otra recibe `409 STOCK_INSUFICIENTE`. Lo prueba `tests/services.test.ts`.
+- **Ventas simultáneas**: dos vendedores que venden la última unidad al mismo tiempo terminan con una sola factura; la otra recibe `409 STOCK_INSUFICIENTE`. Lo prueba `tests/servicios.test.ts`.
 - **Anulación a cuenta corriente**: se sigue el §11.6 y se acredita el total de la factura. Si el cliente ya hubiera pagado parte, eso podría dejar un saldo a favor, que la regla 8 no admite. El enunciado no resuelve ese caso; lo dejamos documentado acá y el seed anula antes de registrar pagos.
 - **Interfaz propia**: paleta inspirada en el norte argentino (verde, mostaza y la franja de colores del aguayo en el panel lateral), tipografías Bricolage Grotesque, Figtree e IBM Plex Mono para los números.
-- **Datos del comercio**: solo el nombre es real; domicilio, CUIT y teléfono son de fantasía (`src/lib/store.ts`).
+- **Datos del comercio**: solo el nombre es real; domicilio, CUIT y teléfono son de fantasía (`src/lib/comercio.ts`).
 
 ## Uso de inteligencia artificial
 
 Desarrollamos el sistema con **Claude Code** como agente, siguiendo el enunciado paso a paso en commits chicos. Cada integrante revisó, probó y puede explicar cada parte. Algunos errores del agente que detectamos y corregimos:
 
 - **El CSS se actualizaba un guardado tarde** (el loader de Tailwind de la plantilla). Se reemplazó por el plugin de PostCSS que indica la documentación de Next (commit `fix: run Tailwind through PostCSS...`).
-- **El saldo de los clientes salía mal**: en la subconsulta SQL, Drizzle escribía `"id"` sin el nombre de la tabla y comparaba el id del movimiento en vez del id del cliente. Se encontró probando con `curl` (un pago mayor que la deuda era aceptado) y se corrigió escribiendo la subconsulta con nombres completos (`src/services/customers.ts`).
+- **El saldo de los clientes salía mal**: en la subconsulta SQL, Drizzle escribía `"id"` sin el nombre de la tabla y comparaba el id del movimiento en vez del id del cliente. Se encontró probando con `curl` (un pago mayor que la deuda era aceptado) y se corrigió escribiendo la subconsulta con nombres completos (`src/servicios/clientes.ts`).
 - **El alta de cliente desde Nueva venta confirmaba la venta**: el formulario del diálogo está dentro del formulario de la venta y el evento `submit` subía por el árbol de React. Se agregó `stopPropagation()`.

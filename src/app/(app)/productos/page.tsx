@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
-import { Paginator } from "@/components/common/paginator";
-import { SearchBox } from "@/components/common/search-box";
-import { EmptyState } from "@/components/common/states";
-import { ActiveBadge } from "@/components/common/status-badge";
-import { UrlSelect } from "@/components/common/url-select";
-import { Row, Stack, Text } from "@/components/layout/primitives";
-import { ProductActions } from "@/components/products/product-actions";
-import { ProductFormDialog } from "@/components/products/product-form-dialog";
-import { ProductsTabs } from "@/components/products/products-tabs";
-import { StockCell } from "@/components/products/stock-cell";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { Paginator } from "@/components/comunes/paginador";
+import { SearchBox } from "@/components/comunes/buscador";
+import { EmptyState } from "@/components/comunes/estados";
+import { ActiveBadge } from "@/components/comunes/etiqueta-estado";
+import { UrlSelect } from "@/components/comunes/filtro-url";
+import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
+import { ProductActions } from "@/components/productos/acciones-producto";
+import { ProductFormDialog } from "@/components/productos/dialogo-producto";
+import { ProductsTabs } from "@/components/productos/pestanas-productos";
+import { StockCell } from "@/components/productos/celda-stock";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatMoney } from "@/lib/format";
-import { requirePageUser } from "@/lib/session";
-import { listCategories } from "@/services/categories";
-import { listProducts } from "@/services/products";
+import { formatMoney } from "@/lib/formato";
+import { requirePageUser } from "@/lib/sesion";
+import { listCategories } from "@/servicios/categorias";
+import { listProducts } from "@/servicios/productos";
 
 export const metadata: Metadata = { title: "Productos" };
 

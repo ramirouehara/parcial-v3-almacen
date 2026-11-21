@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { CalendarDays, CalendarRange, PackageMinus, Wallet } from "lucide-react";
-import { PageHeader } from "@/components/common/page-header";
-import { EmptyState } from "@/components/common/states";
-import { DailySalesChart, PaymentFormsChart } from "@/components/dashboard/charts";
-import { StatCard } from "@/components/dashboard/stat-card";
-import { Grid, Row, Stack, Text, Title } from "@/components/layout/primitives";
-import { StockCell } from "@/components/products/stock-cell";
+import { PageHeader } from "@/components/comunes/encabezado-pagina";
+import { EmptyState } from "@/components/comunes/estados";
+import { DailySalesChart, PaymentFormsChart } from "@/components/tablero/graficos";
+import { StatCard } from "@/components/tablero/tarjeta-indicador";
+import { Grid, Row, Stack, Text, Title } from "@/components/maquetacion/primitivas";
+import { StockCell } from "@/components/productos/celda-stock";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatMoney } from "@/lib/format";
-import { requirePageUser } from "@/lib/session";
-import { getDashboard } from "@/services/dashboard";
-import { listProducts } from "@/services/products";
+import { formatMoney } from "@/lib/formato";
+import { requirePageUser } from "@/lib/sesion";
+import { getDashboard } from "@/servicios/tablero";
+import { listProducts } from "@/servicios/productos";
 
 /** Inicio (/): el tablero con indicadores (RF-T1), gráficos (RF-T2) y más vendidos (RF-T3). Ambos roles. */
 export default async function HomePage() {

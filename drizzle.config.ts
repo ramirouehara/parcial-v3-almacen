@@ -4,7 +4,7 @@ import "dotenv/config"; // drizzle-kit no lee el .env por su cuenta
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "./src/db/schema.ts", // dónde están definidas las tablas
+  schema: "./src/db/esquema.ts", // dónde están definidas las tablas
   out: "./src/db/migrations", // dónde van los archivos SQL generados
   dialect: "turso", // libSQL: funciona con un archivo local y con Turso
   dbCredentials: {

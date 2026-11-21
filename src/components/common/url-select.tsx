@@ -4,16 +4,20 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const ALL = "todos";
+// Valor interno de la opción "sin filtro" (no puede chocar con un valor real).
+const ALL = "__all__";
 
 export function UrlSelect({
   param,
   label,
   options,
+  allLabel,
 }: {
   param: string;
   label: string;
   options: { value: string; label: string }[];
+  /** Texto de la opción sin filtro; por defecto "<label>: todos". */
+  allLabel?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,7 +36,7 @@ export function UrlSelect({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value={ALL}>{label}: todos</SelectItem>
+        <SelectItem value={ALL}>{allLabel ?? `${label}: todos`}</SelectItem>
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
             {option.label}

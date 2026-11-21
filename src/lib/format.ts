@@ -77,9 +77,9 @@ export function formatInvoiceNumber(puntoVenta: number, numero: number): string 
   return `${String(puntoVenta).padStart(4, "0")}-${String(numero).padStart(8, "0")}`;
 }
 
-/** Número de recibo -> "R-00000012" (los recibos tienen su propia numeración, regla 4). */
-export function formatReceiptNumber(numero: number): string {
-  return `R-${String(numero).padStart(8, "0")}`;
+/** Número de recibo -> "R 0001-00000012" (los recibos tienen su propia numeración, regla 4). */
+export function formatReceiptNumber(puntoVenta: number, numero: number): string {
+  return `R ${formatInvoiceNumber(puntoVenta, numero)}`;
 }
 
 /**

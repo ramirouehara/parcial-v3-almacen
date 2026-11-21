@@ -77,16 +77,16 @@ export function AppShell({ user, children }: { user: AuthUser; children: ReactNo
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <Stack gap={0} className="min-h-screen md:pl-60">
+    <Stack gap={0} className="min-h-screen md:pl-60 print:pl-0">
       {/* Panel lateral fijo, solo en pantallas medianas o más grandes */}
-      <Stack gap={0} className="fixed inset-y-0 left-0 hidden w-60 md:flex">
+      <Stack gap={0} className="no-print fixed inset-y-0 left-0 hidden w-60 md:flex">
         <Sidebar user={user} />
       </Stack>
 
       {/* Barra superior */}
       <Row
         justify="between"
-        className="sticky top-0 z-10 h-14 flex-nowrap border-b bg-background/95 px-4 backdrop-blur"
+        className="no-print sticky top-0 z-10 h-14 flex-nowrap border-b bg-background/95 px-4 backdrop-blur"
       >
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>

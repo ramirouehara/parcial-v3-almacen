@@ -14,6 +14,7 @@ import { useState, type ReactNode } from "react";
 import { LogOut, Menu } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
 import { RoleBadge } from "@/components/common/status-badge";
+import { Logo } from "@/components/common/logo";
 import { Row, Stack, Text } from "@/components/layout/primitives";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -23,12 +24,15 @@ import { navItems } from "./nav-items";
 
 function Brand() {
   return (
-    <Stack gap={0}>
-      <Text variant="small" className="tracking-widest text-sidebar-primary uppercase">
-        Almacén
-      </Text>
-      <Text className="font-heading text-xl font-bold text-white">Rey Dani</Text>
-    </Stack>
+    <Row gap={3} className="flex-nowrap">
+      <Logo size={52} className="ring-2 ring-sidebar-primary/60" />
+      <Stack gap={0}>
+        <Text variant="small" className="tracking-widest text-sidebar-primary uppercase">
+          Almacén
+        </Text>
+        <Text className="font-heading text-xl font-bold text-white">Rey Dani</Text>
+      </Stack>
+    </Row>
   );
 }
 

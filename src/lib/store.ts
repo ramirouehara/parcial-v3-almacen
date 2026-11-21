@@ -6,7 +6,7 @@ export const STORE = {
   nombre: "Almacén Rey Dani",
   domicilio: "Av. Belgrano 1450, San Miguel de Tucumán",
   cuit: "30-71234567-0",
-  telefono: "381 400-1234",
+  telefono: "381 000 0000", // el mismo del logo
   condicionIva: "Responsable inscripto",
 };
 

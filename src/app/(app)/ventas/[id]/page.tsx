@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/common/logo";
 import { PrintButton } from "@/components/common/print-button";
 import { Row, Stack, Text, Title } from "@/components/layout/primitives";
 import { CancelInvoiceDialog } from "@/components/sales/cancel-invoice-dialog";
@@ -54,13 +55,16 @@ export default async function InvoicePage({ params }: PageProps<"/ventas/[id]">)
         <CardContent>
           <Stack gap={4}>
             <Row justify="between" align="start">
-              <Stack gap={0}>
-                <Title level={2}>{STORE.nombre}</Title>
-                <Text variant="small">{STORE.domicilio}</Text>
-                <Text variant="small">
-                  CUIT {STORE.cuit} · {STORE.condicionIva} · Tel. {STORE.telefono}
-                </Text>
-              </Stack>
+              <Row gap={3} className="flex-nowrap">
+                <Logo size={64} />
+                <Stack gap={0}>
+                  <Title level={2}>{STORE.nombre}</Title>
+                  <Text variant="small">{STORE.domicilio}</Text>
+                  <Text variant="small">
+                    CUIT {STORE.cuit} · {STORE.condicionIva} · Tel. {STORE.telefono}
+                  </Text>
+                </Stack>
+              </Row>
               <Stack gap={0} className="text-right">
                 <Text variant="strong">FACTURA</Text>
                 <Text variant="number" className="text-lg">

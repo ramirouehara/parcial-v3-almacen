@@ -23,6 +23,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Todas las rutas menos la API, los archivos propios de Next y las imágenes.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|ico)$).*)"],
+  // Todas las rutas menos la API, los archivos propios de Next y las imágenes
+  // (el logo se ve también en /login, sin sesión).
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|webp|ico)$).*)"],
 };

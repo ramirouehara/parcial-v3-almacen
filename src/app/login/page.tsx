@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "@/components/auth/login-form";
+import { Logo } from "@/components/common/logo";
 import { Stack, Text, Title } from "@/components/layout/primitives";
 
 export const metadata: Metadata = { title: "Iniciar sesión" };
@@ -11,6 +12,7 @@ export default function LoginPage() {
     <Stack gap={0} className="min-h-screen bg-sidebar">
       <Stack gap={0} className="aguayo-stripe" />
       <Stack gap={6} className="mx-auto w-full max-w-sm flex-1 justify-center px-4 py-12">
+        <Logo size={160} className="mx-auto shadow-xl ring-4 ring-sidebar-primary/50" />
         <Stack gap={1} className="text-sidebar-foreground">
           <Text variant="small" className="tracking-widest text-sidebar-primary uppercase">
             Gestión comercial

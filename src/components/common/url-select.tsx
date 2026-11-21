@@ -1,6 +1,6 @@
 "use client";
 
-/** A filter dropdown that writes its value in the URL (?activo=true), like SearchBox. */
+/** Un filtro desplegable que escribe su valor en la URL (?activo=true), como SearchBox. */
 import { useRouter, useSearchParams } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 

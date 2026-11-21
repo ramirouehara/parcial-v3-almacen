@@ -4,8 +4,8 @@ import { Stack, Text, Title } from "@/components/layout/primitives";
 
 export const metadata: Metadata = { title: "Iniciar sesión" };
 
-// /login: the only public page (RF-U2). It is outside the (app) folder,
-// so it does NOT get the sidebar layout.
+// /login: la única página pública (RF-U2). Está fuera de la carpeta (app),
+// por eso NO tiene el layout con panel lateral.
 export default function LoginPage() {
   return (
     <Stack gap={0} className="min-h-screen bg-sidebar">

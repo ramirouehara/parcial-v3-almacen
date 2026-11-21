@@ -4,7 +4,7 @@ import { EmptyState } from "@/components/common/states";
 
 export const metadata: Metadata = { title: "Productos" };
 
-// Placeholder so the sidebar link works. The real screen arrives in commit 4.
+// Página provisoria para que funcione el enlace del panel. La pantalla real llega en el commit 4.
 export default function Page() {
   return (
     <>

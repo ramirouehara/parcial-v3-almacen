@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * The common form hook (§10.6). It handles, for every form of the app:
- *  - the values of the fields,
- *  - the error next to each field: first Zod's (before sending), then the server's,
- *  - the "sending..." state,
- *  - the toast with the result.
+ * El hook común de formularios (§10.6). Se encarga, en todos los formularios de la app, de:
+ *  - los valores de los campos,
+ *  - el error al lado de cada campo: primero el de Zod (antes de enviar), después el del servidor,
+ *  - el estado "enviando...",
+ *  - el aviso (toast) con el resultado.
  *
- * The SAME Zod schema the service uses runs here first (§10.8 point 6).
+ * El MISMO esquema Zod que usa el servicio corre primero acá (§10.8 punto 6).
  */
 import { useState } from "react";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ export function useForm<V extends Record<string, unknown>>(schema: z.ZodType, in
   const [errors, setErrors] = useState<Errors>({});
   const [pending, setPending] = useState(false);
 
-  /** Changes one field and clears its error. */
+  /** Cambia un campo y borra su error. */
   function setField<K extends keyof V>(key: K, value: V[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => {
@@ -39,12 +39,12 @@ export function useForm<V extends Record<string, unknown>>(schema: z.ZodType, in
     });
   }
 
-  /** Validates with Zod, calls the server action and shows the result. Returns true on success. */
+  /** Valida con Zod, llama a la server action y muestra el resultado. Devuelve true si salió bien. */
   async function submit<T>(
     serverAction: (values: V) => Promise<ActionResult<T>>,
     options: { success?: string; onSuccess?: (data: T) => void } = {},
   ): Promise<boolean> {
-    // 1) Same rules as the server, before sending anything.
+    // 1) Las mismas reglas que el servidor, antes de mandar nada.
     const parsed = schema.safeParse(values);
     if (!parsed.success) {
       setErrors(toErrorMap(zodToFieldErrors(parsed.error)));
@@ -53,7 +53,7 @@ export function useForm<V extends Record<string, unknown>>(schema: z.ZodType, in
 
     setPending(true);
     try {
-      // 2) The server validates AGAIN; its field errors also go next to each field.
+      // 2) El servidor valida OTRA VEZ; sus errores de campo también van al lado de cada campo.
       const result = await serverAction(values);
       if (!result.ok) {
         if (isFieldErrorList(result.error.details)) setErrors(toErrorMap(result.error.details));

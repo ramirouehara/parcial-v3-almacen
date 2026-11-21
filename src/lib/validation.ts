@@ -2,10 +2,10 @@ import type { z } from "zod";
 import { ApiError, type FieldError } from "./errors";
 
 /**
- * Converts Zod errors into the `details` list of §11.1:
+ * Convierte los errores de Zod en la lista `details` del §11.1:
  *   [{ campo: "email", mensaje: "Ingresá un email válido." }, ...]
- * A strict schema reports unknown fields (for example `existencia` in a
- * product PATCH) as one "unrecognized_keys" issue: we split it per field.
+ * Un esquema estricto informa los campos desconocidos (por ejemplo `existencia` en el
+ * PATCH de un producto) como un solo error "unrecognized_keys": lo separamos por campo.
  */
 export function zodToFieldErrors(error: z.ZodError): FieldError[] {
   return error.issues.flatMap((issue) => {
@@ -21,8 +21,8 @@ export function zodToFieldErrors(error: z.ZodError): FieldError[] {
 }
 
 /**
- * Step 1 of every service function (§10.2): validate the raw input with the
- * shared Zod schema. If something is wrong it throws 422 VALIDACION.
+ * Paso 1 de toda función de servicio (§10.2): validar la entrada cruda con el
+ * esquema Zod compartido. Si algo está mal, lanza 422 VALIDACION.
  */
 export function parseInput<S extends z.ZodType>(schema: S, input: unknown): z.output<S> {
   const result = schema.safeParse(input);

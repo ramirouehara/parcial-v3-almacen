@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "@/hooks/use-form";
 import { loginSchema } from "@/schemas/auth";
 
-/** RF-U1: email + password. The same loginSchema validates here and in the server. */
+/** RF-U1: email + contraseña. El mismo loginSchema valida acá y en el servidor. */
 export function LoginForm() {
   const router = useRouter();
   const form = useForm(loginSchema, { email: "", password: "" });

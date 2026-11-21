@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Create or edit a user (RF-U4) in a modal window.
- * Creating asks for a temporary password; editing does not (the password is
- * changed with "Restablecer contraseña" or by the user in /perfil).
+ * Crear o editar un usuario (RF-U4) en una ventana modal.
+ * Al crear se pide una contraseña temporal; al editar no (la contraseña se
+ * cambia con "Restablecer contraseña" o la cambia el propio usuario en /perfil).
  */
 import { useState, type ReactNode } from "react";
 import { createUserAction, updateUserAction } from "@/actions/users";
@@ -25,7 +25,7 @@ import { useForm } from "@/hooks/use-form";
 import { createUserSchema, updateUserSchema } from "@/schemas/users";
 import type { PublicUser } from "@/services/users";
 
-// `password` only exists when creating: the edit schema is strict and would reject it.
+// `password` solo existe al crear: el esquema de edición es estricto y lo rechazaría.
 type Values = { nombre: string; email: string; rol: "admin" | "vendedor"; password?: string };
 
 export function UserFormDialog({ user, trigger }: { user?: PublicUser; trigger: ReactNode }) {
@@ -42,7 +42,7 @@ export function UserFormDialog({ user, trigger }: { user?: PublicUser; trigger: 
             {editing ? user.email : "La contraseña es temporal: el usuario la cambia desde su perfil."}
           </DialogDescription>
         </DialogHeader>
-        {/* Mounted only while open, so it always starts with fresh values. */}
+        {/* Se monta solo mientras está abierto, así siempre arranca con valores limpios. */}
         {open && <UserForm user={user} onDone={() => setOpen(false)} />}
       </DialogContent>
     </Dialog>
@@ -54,7 +54,7 @@ function UserForm({ user, onDone }: { user?: PublicUser; onDone: () => void }) {
   const initial: Values = editing
     ? { nombre: user.nombre, email: user.email, rol: user.rol }
     : { nombre: "", email: "", rol: "vendedor", password: "" };
-  // Creating validates with createUserSchema; editing with updateUserSchema.
+  // Al crear valida con createUserSchema; al editar, con updateUserSchema.
   const form = useForm(editing ? updateUserSchema : createUserSchema, initial);
 
   async function handleSubmit(event: React.FormEvent) {

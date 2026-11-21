@@ -5,7 +5,7 @@ import { requirePageUser } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Mi perfil" };
 
-// /perfil (RF-U5): every user changes their own password.
+// /perfil (RF-U5): cada usuario cambia su propia contraseña.
 export default async function ProfilePage() {
   const user = await requirePageUser();
   return (

@@ -4,8 +4,8 @@ import { Row, Text } from "@/components/layout/primitives";
 import { Button } from "@/components/ui/button";
 
 /**
- * Previous / next page. The page lives in the URL (?page=2, §10.6), so a
- * list can be reloaded or shared and still show the same page.
+ * Página anterior / siguiente. La página vive en la URL (?page=2, §10.6), así un
+ * listado se puede recargar o compartir y sigue mostrando la misma página.
  */
 export function Paginator({
   page,
@@ -16,7 +16,7 @@ export function Paginator({
   page: number;
   pageSize: number;
   total: number;
-  /** The current filters, so changing page keeps them. */
+  /** Los filtros actuales, para que cambiar de página no los pierda. */
   searchParams: Record<string, string | undefined>;
 }) {
   const pages = Math.max(1, Math.ceil(total / pageSize));

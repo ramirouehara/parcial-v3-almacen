@@ -2,12 +2,12 @@ import { AppShell } from "@/components/shell/app-shell";
 import { requirePageUser } from "@/lib/session";
 
 /**
- * Layout of every screen INSIDE the system (§4): sidebar + top bar.
- * The "(app)" folder is a route group: the parentheses mean it does not
- * appear in the URL. /usuarios is src/app/(app)/usuarios/page.tsx.
- * /login lives outside this folder, so it does not get the sidebar.
+ * Layout de todas las pantallas de ADENTRO del sistema (§4): panel lateral + barra superior.
+ * La carpeta "(app)" es un grupo de rutas: los paréntesis indican que no
+ * aparece en la URL. /usuarios es src/app/(app)/usuarios/page.tsx.
+ * /login vive fuera de esta carpeta, por eso no tiene panel lateral.
  *
- * Second barrier of §10.5: without a valid user it redirects to /login.
+ * Segunda barrera del §10.5: sin un usuario válido, redirige a /login.
  */
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const user = await requirePageUser();

@@ -1,19 +1,19 @@
 /**
- * Database schema: the 9 tables of §7 ("Modelo de datos mínimo").
+ * Esquema de la base de datos: las 9 tablas del §7 ("Modelo de datos mínimo").
  *
- * Conventions used in every table:
- * - `id` is an auto-increment integer.
- * - Money is INTEGER cents, never floating point (rule 10): 1250000 = $ 12.500,00.
- * - Dates are stored as milliseconds since 1970 (UTC). Drizzle turns them into Date.
- * - Records with history are never deleted: they have an `activo` flag (rule 12).
+ * Convenciones que usan todas las tablas:
+ * - `id` es un entero autoincremental.
+ * - La plata va en centavos ENTEROS, nunca con coma flotante (regla 10): 1250000 = $ 12.500,00.
+ * - Las fechas se guardan como milisegundos desde 1970 (UTC). Drizzle las convierte en Date.
+ * - Los registros con historial nunca se borran: tienen una marca `activo` (regla 12).
  *
- * Property names (left) are what the code and the API use, in camelCase.
- * Column names (the strings) are what SQLite stores, in snake_case.
+ * Los nombres de las propiedades (a la izquierda) son los que usan el código y la API, en camelCase.
+ * Los nombres de las columnas (los textos) son los que guarda SQLite, en snake_case.
  */
 import { sql } from "drizzle-orm";
 import { check, index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
-// Small helpers so every table declares these columns the same way.
+// Ayudantes chicos, para que todas las tablas declaren estas columnas igual.
 const id = () => integer("id").primaryKey({ autoIncrement: true });
 const createdAt = (name = "creado_en") =>
   integer(name, { mode: "timestamp_ms" })
@@ -21,20 +21,20 @@ const createdAt = (name = "creado_en") =>
     .$defaultFn(() => new Date());
 const active = (name = "activo") => integer(name, { mode: "boolean" }).notNull().default(true);
 
-// ---------------------------------------------------------------- users (RF-U)
+// ---------------------------------------------------------------- usuarios (RF-U)
 
 export const usuarios = sqliteTable("usuarios", {
   id: id(),
   email: text("email").notNull().unique(),
   nombre: text("nombre").notNull(),
-  // Never the password itself: only its bcrypt hash.
+  // Nunca la contraseña en sí: solo su hash bcrypt.
   passwordHash: text("password_hash").notNull(),
   rol: text("rol", { enum: ["admin", "vendedor"] }).notNull(),
   activo: active(),
   creadoEn: createdAt(),
 });
 
-// ---------------------------------------------------------- catalog (RF-P)
+// ---------------------------------------------------------- catálogo (RF-P)
 
 export const categorias = sqliteTable("categorias", {
   id: id(),
@@ -52,24 +52,24 @@ export const productos = sqliteTable(
     categoriaId: integer("categoria_id")
       .notNull()
       .references(() => categorias.id),
-    // Final price in cents (taxes included).
+    // Precio final en centavos (con impuestos incluidos).
     precio: integer("precio").notNull(),
-    // Stored stock. It ONLY changes through moverStock(), which also writes
-    // the matching row in movimientos_stock (rule 2).
+    // Stock guardado. SOLO cambia a través de moverStock(), que además escribe
+    // la fila correspondiente en movimientos_stock (regla 2).
     existencia: integer("existencia").notNull().default(0),
     stockMinimo: integer("stock_minimo").notNull().default(0),
     activo: active(),
     creadoEn: createdAt(),
   },
   (t) => [
-    // Last line of defense for rule 1: SQLite itself rejects negative stock.
+    // Última línea de defensa de la regla 1: el propio SQLite rechaza el stock negativo.
     check("existencia_no_negativa", sql`${t.existencia} >= 0`),
     index("productos_categoria_idx").on(t.categoriaId),
   ],
 );
 
-// One row per stock change (rule 2): the sum of `cantidad` for a product
-// must always equal its `existencia`.
+// Una fila por cada cambio de stock (regla 2): la suma de `cantidad` de un producto
+// tiene que ser siempre igual a su `existencia`.
 export const movimientosStock = sqliteTable(
   "movimientos_stock",
   {
@@ -78,7 +78,7 @@ export const movimientosStock = sqliteTable(
       .notNull()
       .references(() => productos.id),
     tipo: text("tipo", { enum: ["venta", "anulacion", "ingreso", "egreso"] }).notNull(),
-    // Signed: positive adds stock (ingreso, anulacion), negative removes it.
+    // Con signo: positivo suma stock (ingreso, anulacion), negativo lo resta.
     cantidad: integer("cantidad").notNull(),
     existenciaResultante: integer("existencia_resultante").notNull(),
     motivo: text("motivo").notNull(),
@@ -86,35 +86,35 @@ export const movimientosStock = sqliteTable(
     usuarioId: integer("usuario_id")
       .notNull()
       .references(() => usuarios.id),
-    // Only for sales and cancellations: which invoice caused the movement.
+    // Solo para ventas y anulaciones: qué factura causó el movimiento.
     facturaId: integer("factura_id").references(() => facturas.id),
-    // When it happened. It is also the creation date of the row.
+    // Cuándo ocurrió. También es la fecha de creación de la fila.
     fecha: createdAt("fecha"),
   },
   (t) => [index("movimientos_stock_producto_idx").on(t.productoId)],
 );
 
-// ------------------------------------------------- customers (RF-C)
+// ------------------------------------------------- clientes (RF-C)
 
 export const clientes = sqliteTable("clientes", {
   id: id(),
   tipoDoc: text("tipo_doc", { enum: ["DNI", "CUIT"] }).notNull(),
-  // Digits only ("28456123"), so "28.456.123" and "28456123" are the same
-  // document. The dots are added when it is shown on screen.
+  // Solo dígitos ("28456123"), así "28.456.123" y "28456123" son el mismo
+  // documento. Los puntos se agregan al mostrarlo en pantalla.
   nroDoc: text("nro_doc").notNull().unique(),
   nombre: text("nombre").notNull(),
   domicilio: text("domicilio"),
   telefono: text("telefono"),
   email: text("email"),
-  // The "libreta": can this customer buy on credit?
+  // La "libreta": ¿este cliente puede comprar fiado?
   cuentaCorriente: integer("cuenta_corriente", { mode: "boolean" }).notNull().default(false),
-  // Credit limit in cents. null = no limit.
+  // Límite de crédito en centavos. null = sin límite.
   limiteCredito: integer("limite_credito"),
   activo: active(),
   creadoEn: createdAt(),
 });
 
-// The balance is NOT stored: it is debits minus credits of these rows (rule 7).
+// El saldo NO se guarda: son los débitos menos los créditos de estas filas (regla 7).
 export const movimientosCuenta = sqliteTable(
   "movimientos_cuenta",
   {
@@ -122,12 +122,12 @@ export const movimientosCuenta = sqliteTable(
     clienteId: integer("cliente_id")
       .notNull()
       .references(() => clientes.id),
-    // debito = the customer owes more (a sale); credito = owes less (payment, cancellation).
+    // debito = el cliente debe más (una venta); credito = debe menos (pago, anulación).
     tipo: text("tipo", { enum: ["debito", "credito"] }).notNull(),
-    // Always positive: the sign comes from `tipo`.
+    // Siempre positivo: el signo lo da `tipo`.
     importe: integer("importe").notNull(),
     descripcion: text("descripcion").notNull(),
-    // Where the movement comes from: an invoice OR a payment.
+    // De dónde viene el movimiento: de una factura O de un pago.
     facturaId: integer("factura_id").references(() => facturas.id),
     pagoId: integer("pago_id").references(() => pagos.id),
     usuarioId: integer("usuario_id")
@@ -145,7 +145,7 @@ export const pagos = sqliteTable(
   "pagos",
   {
     id: id(),
-    // Receipt number, with its own correlative numbering (rule 4).
+    // Número de recibo, con su propia numeración correlativa (regla 4).
     numeroRecibo: integer("numero_recibo").notNull().unique(),
     clienteId: integer("cliente_id")
       .notNull()
@@ -161,40 +161,40 @@ export const pagos = sqliteTable(
   (t) => [index("pagos_cliente_idx").on(t.clienteId)],
 );
 
-// ------------------------------------------------------- sales (RF-V)
+// ------------------------------------------------------- ventas (RF-V)
 
 export const facturas = sqliteTable(
   "facturas",
   {
     id: id(),
-    // Shown as "0001-00000042": point of sale + correlative number (rule 4).
+    // Se muestra como "0001-00000042": punto de venta + número correlativo (regla 4).
     puntoVenta: integer("punto_venta").notNull(),
     numero: integer("numero").notNull(),
     // null = "Consumidor final".
     clienteId: integer("cliente_id").references(() => clientes.id),
-    // The seller who issued it (rule 11).
+    // El vendedor que la emitió (regla 11).
     usuarioId: integer("usuario_id")
       .notNull()
       .references(() => usuarios.id),
     total: integer("total").notNull(),
     formaPago: text("forma_pago", { enum: ["contado", "tarjeta", "cuenta_corriente"] }).notNull(),
-    // Cash only: how much the customer handed over (the change is calculated).
+    // Solo efectivo: cuánto entregó el cliente (el vuelto se calcula).
     montoRecibido: integer("monto_recibido"),
-    // Card only: type, brand and last 4 digits. NEVER the full number (rule 9).
+    // Solo tarjeta: tipo, marca y últimos 4 dígitos. NUNCA el número completo (regla 9).
     tarjetaTipo: text("tarjeta_tipo", { enum: ["debito", "credito"] }),
     tarjetaMarca: text("tarjeta_marca"),
     tarjetaUltimos4: text("tarjeta_ultimos4"),
     estado: text("estado", { enum: ["emitida", "anulada"] })
       .notNull()
       .default("emitida"),
-    // Filled only when an admin cancels it (RF-V9).
+    // Se completa solo cuando un admin la anula (RF-V9).
     motivoAnulacion: text("motivo_anulacion"),
     anuladaEn: integer("anulada_en", { mode: "timestamp_ms" }),
     anuladaPorId: integer("anulada_por_id").references(() => usuarios.id),
     fecha: createdAt("fecha"),
   },
   (t) => [
-    // Two invoices can never share a number.
+    // Dos facturas nunca pueden compartir el número.
     uniqueIndex("facturas_numero_uq").on(t.puntoVenta, t.numero),
     index("facturas_fecha_idx").on(t.fecha),
     index("facturas_cliente_idx").on(t.clienteId),
@@ -211,8 +211,8 @@ export const facturaItems = sqliteTable(
     productoId: integer("producto_id")
       .notNull()
       .references(() => productos.id),
-    // Copied from the catalog when the invoice is issued (rule 3): changing
-    // the product later does not change invoices already issued.
+    // Se copia del catálogo cuando se emite la factura (regla 3): cambiar
+    // el producto después no cambia las facturas ya emitidas.
     codigo: text("codigo").notNull(),
     descripcion: text("descripcion").notNull(),
     precioUnitario: integer("precio_unitario").notNull(),
@@ -223,7 +223,7 @@ export const facturaItems = sqliteTable(
   (t) => [index("factura_items_factura_idx").on(t.facturaId)],
 );
 
-// Types inferred from the tables, to use in the rest of the code.
+// Tipos deducidos de las tablas, para usar en el resto del código.
 export type Usuario = typeof usuarios.$inferSelect;
 export type Rol = Usuario["rol"];
 export type Producto = typeof productos.$inferSelect;

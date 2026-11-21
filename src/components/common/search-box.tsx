@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Search box that writes `?q=...` in the URL (§10.6: search, filters and
- * page live in the URL). The page (a Server Component) reads the URL and
- * asks the service for the matching rows.
+ * Buscador que escribe `?q=...` en la URL (§10.6: búsqueda, filtros y
+ * página viven en la URL). La página (un Server Component) lee la URL y
+ * le pide al servicio las filas que coinciden.
  */
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -20,7 +20,7 @@ export function SearchBox({ placeholder }: { placeholder: string }) {
     const params = new URLSearchParams(searchParams);
     if (text.trim()) params.set("q", text.trim());
     else params.delete("q");
-    params.delete("page"); // a new search starts at page 1
+    params.delete("page"); // una búsqueda nueva arranca en la página 1
     router.replace(`?${params.toString()}`);
   }
 

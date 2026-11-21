@@ -6,7 +6,7 @@ export const loginSchema = z.object({
   password: z.string({ error: REQUIRED }).min(1, { error: REQUIRED }),
 });
 
-/** PUT /api/auth/password (RF-U5): every user changes their own password. */
+/** PUT /api/auth/password (RF-U5): cada usuario cambia su propia contraseña. */
 export const changePasswordSchema = z.object({
   actual: z.string({ error: REQUIRED }).min(1, { error: REQUIRED }),
   nueva: password,

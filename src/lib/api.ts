@@ -1,13 +1,13 @@
 /**
- * Common wrapper for EVERY Route Handler (§10.3).
+ * Envoltorio común para TODOS los Route Handlers (§10.3).
  *
- * It does the repetitive part once:
- *  1. requires the session (401 NO_AUTENTICADO without it),
- *  2. resolves the route params ({id}),
- *  3. reads the JSON body (400 JSON_INVALIDO if it is broken),
- *  4. turns any error into the standard shape of §11.1.
+ * Hace una sola vez la parte repetitiva:
+ *  1. exige la sesión (sin ella, 401 NO_AUTENTICADO),
+ *  2. resuelve los parámetros de la ruta ({id}),
+ *  3. lee el cuerpo JSON (400 JSON_INVALIDO si está roto),
+ *  4. convierte cualquier error en la forma estándar del §11.1.
  *
- * So each route is just "call the service and respond". Example:
+ * Así cada ruta es solo "llamar al servicio y responder". Ejemplo:
  *   export const GET = route(({ user, query }) => listUsers(user, query));
  */
 import type { NextRequest } from "next/server";
@@ -18,9 +18,9 @@ import { getSessionUser } from "./session";
 type Context<P> = {
   user: AuthUser;
   params: P;
-  /** The query string as an object: ?q=ana&page=2 -> { q: "ana", page: "2" } */
+  /** La query string como objeto: ?q=ana&page=2 -> { q: "ana", page: "2" } */
   query: Record<string, string>;
-  /** Reads the JSON body. */
+  /** Lee el cuerpo JSON. */
   body: () => Promise<unknown>;
 };
 
@@ -32,7 +32,7 @@ async function readJson(req: NextRequest): Promise<unknown> {
   }
 }
 
-/** undefined -> 204 No Content; anything else -> JSON with the given status. */
+/** undefined -> 204 No Content; cualquier otra cosa -> JSON con el status indicado. */
 function toResponse(result: unknown, status: number): Response {
   if (result === undefined) return new Response(null, { status: 204 });
   return Response.json(result, { status });
@@ -43,7 +43,7 @@ export function errorResponse(err: unknown): Response {
   return Response.json({ error: apiError.toBody() }, { status: apiError.status });
 }
 
-/** A route that requires a session. `status` is the success code (201 for creations). */
+/** Una ruta que exige sesión. `status` es el código de éxito (201 al crear). */
 export function route<P = Record<string, string>>(
   handler: (ctx: Context<P>) => Promise<unknown>,
   { status = 200 } = {},
@@ -66,7 +66,7 @@ export function route<P = Record<string, string>>(
   };
 }
 
-/** The only public route: POST /api/auth/login. */
+/** La única ruta pública: POST /api/auth/login. */
 export function publicRoute(handler: (ctx: { body: () => Promise<unknown> }) => Promise<unknown>) {
   return async (req: NextRequest) => {
     try {

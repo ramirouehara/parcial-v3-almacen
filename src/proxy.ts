@@ -1,10 +1,10 @@
 /**
- * First barrier of §10.5. Next.js runs this BEFORE rendering any page.
- * Without a valid signed cookie, the user is sent to /login.
+ * Primera barrera del §10.5. Next.js corre esto ANTES de dibujar cualquier página.
+ * Sin una cookie firmada válida, el usuario va a /login.
  *
- * It is a quick check only. Pages look up the user in the database again
- * (barrier 2) and services check the role (barrier 3).
- * The API is excluded: its wrapper (src/lib/api.ts) answers 401 as JSON.
+ * Es solo un control rápido. Las páginas vuelven a buscar al usuario en la base
+ * (barrera 2) y los servicios comprueban el rol (barrera 3).
+ * La API queda afuera: su envoltorio (src/lib/api.ts) responde 401 en JSON.
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE, verifySession } from "@/lib/session-token";
@@ -17,12 +17,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (userId && isLoginPage) {
-    return NextResponse.redirect(new URL("/", request.url)); // already logged in
+    return NextResponse.redirect(new URL("/", request.url)); // ya está logueado
   }
   return NextResponse.next();
 }
 
 export const config = {
-  // Every path except the API, Next's own files and images.
+  // Todas las rutas menos la API, los archivos propios de Next y las imágenes.
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|ico)$).*)"],
 };

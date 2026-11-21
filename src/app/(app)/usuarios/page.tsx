@@ -17,13 +17,13 @@ import { listUsers } from "@/services/users";
 export const metadata: Metadata = { title: "Usuarios" };
 
 /**
- * /usuarios (RF-U4), admin only.
- * A Server Component: it runs on the server, calls the service directly and
- * sends ready-made HTML. Search, filter and page come from the URL (§10.6).
+ * /usuarios (RF-U4), solo admin.
+ * Es un Server Component: corre en el servidor, llama al servicio directo y
+ * manda HTML ya armado. Búsqueda, filtro y página vienen de la URL (§10.6).
  */
 export default async function UsersPage({ searchParams }: PageProps<"/usuarios">) {
   const user = await requirePageUser();
-  // Visual help only: listUsers() would throw 403 for a vendedor anyway.
+  // Solo ayuda visual: listUsers() igual lanzaría 403 para un vendedor.
   if (user.rol !== "admin") return <ForbiddenState />;
 
   const params = (await searchParams) as Record<string, string | undefined>;

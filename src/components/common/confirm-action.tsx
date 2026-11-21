@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * Asks "are you sure?" before an irreversible action (§8): cancel an invoice,
- * deactivate a product, a customer or a user.
+ * Pregunta "¿estás seguro?" antes de una acción irreversible (§8): anular una factura,
+ * desactivar un producto, un cliente o un usuario.
  */
 import { useState, type ReactNode } from "react";
 import {
@@ -28,14 +28,14 @@ export function ConfirmAction({
   title: string;
   description: string;
   confirmLabel: string;
-  /** Returns true when it worked, so the dialog closes. */
+  /** Devuelve true cuando salió bien, así se cierra el diálogo. */
   onConfirm: () => Promise<boolean>;
 }) {
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
 
   async function handleConfirm(event: React.MouseEvent) {
-    event.preventDefault(); // keep the dialog open until the server answers
+    event.preventDefault(); // el diálogo queda abierto hasta que responde el servidor
     setPending(true);
     const ok = await onConfirm();
     setPending(false);

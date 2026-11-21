@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Stack, Text } from "@/components/layout/primitives";
 import { Label } from "@/components/ui/label";
 
-/** A label, the input and its error message right below (§8 Validación en ambos lados). */
+/** Una etiqueta, el campo y su mensaje de error justo abajo (§8 Validación en ambos lados). */
 export function FormField({
   label,
   htmlFor,

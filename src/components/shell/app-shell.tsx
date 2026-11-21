@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * The frame shared by every screen (§4): fixed sidebar on the left and a top
- * bar with the user and the logout button. On small screens (< 768 px) the
- * sidebar collapses into a menu that opens from the left (§8 Adaptable).
+ * El marco que comparten todas las pantallas (§4): panel lateral fijo a la izquierda y una
+ * barra superior con el usuario y el botón Salir. En pantallas chicas (< 768 px) el
+ * panel se colapsa en un menú que se abre desde la izquierda (§8 Adaptable).
  *
- * It is a Client Component because it needs the current URL (usePathname)
- * to highlight the active module, and state to open the mobile menu.
+ * Es un Client Component porque necesita la URL actual (usePathname) para
+ * resaltar el módulo activo, y estado para abrir el menú del celular.
  */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -78,12 +78,12 @@ export function AppShell({ user, children }: { user: AuthUser; children: ReactNo
 
   return (
     <Stack gap={0} className="min-h-screen md:pl-60">
-      {/* Fixed sidebar, only on medium screens and up */}
+      {/* Panel lateral fijo, solo en pantallas medianas o más grandes */}
       <Stack gap={0} className="fixed inset-y-0 left-0 hidden w-60 md:flex">
         <Sidebar user={user} />
       </Stack>
 
-      {/* Top bar */}
+      {/* Barra superior */}
       <Row
         justify="between"
         className="sticky top-0 z-10 h-14 flex-nowrap border-b bg-background/95 px-4 backdrop-blur"

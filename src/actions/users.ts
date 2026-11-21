@@ -1,6 +1,6 @@
 "use server";
 
-/** Server Actions for users (RF-U4, RF-U5). Same services as /api/usuarios. */
+/** Server Actions de usuarios (RF-U4, RF-U5). Los mismos servicios que /api/usuarios. */
 import { action } from "@/lib/action";
 import { createUser, resetPassword, updateUser } from "@/services/users";
 

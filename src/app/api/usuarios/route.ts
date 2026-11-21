@@ -1,4 +1,4 @@
-// GET /api/usuarios and POST /api/usuarios (RF-U4). Admin only.
+// GET /api/usuarios y POST /api/usuarios (RF-U4). Solo admin.
 import { route } from "@/lib/api";
 import { createUser, listUsers } from "@/services/users";
 

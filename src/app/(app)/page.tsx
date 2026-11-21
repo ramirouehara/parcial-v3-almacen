@@ -2,8 +2,8 @@ import { PageHeader } from "@/components/common/page-header";
 import { EmptyState } from "@/components/common/states";
 import { requirePageUser } from "@/lib/session";
 
-// Home (/). The dashboard with indicators and charts (RF-T) replaces this
-// placeholder in a later commit.
+// Inicio (/). El tablero con indicadores y gráficos (RF-T) reemplaza esta
+// página provisoria en un commit posterior.
 export default async function HomePage() {
   const user = await requirePageUser();
   return (

@@ -1,10 +1,10 @@
 "use server";
 
 /**
- * Server Actions for the session (RF-U1, RF-U5).
- * "use server" turns each exported function into an endpoint that the
- * browser can call like a normal function. They are thin adapters:
- * they only call a service (§10.3).
+ * Server Actions de la sesión (RF-U1, RF-U5).
+ * "use server" convierte cada función exportada en un endpoint que el
+ * navegador puede llamar como una función común. Son adaptadores finos:
+ * solo llaman a un servicio (§10.3).
  */
 import { redirect } from "next/navigation";
 import { action, publicAction } from "@/lib/action";

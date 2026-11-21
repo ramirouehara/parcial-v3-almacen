@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 
-/** Active / inactive badge, the same in every list. */
+/** Etiqueta de activo / inactivo, igual en todos los listados. */
 export function ActiveBadge({ active }: { active: boolean }) {
   return active ? (
     <Badge variant="secondary">Activo</Badge>

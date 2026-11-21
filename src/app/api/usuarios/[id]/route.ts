@@ -1,4 +1,4 @@
-// PATCH /api/usuarios/{id} (RF-U4): edit, change role, deactivate. Admin only.
+// PATCH /api/usuarios/{id} (RF-U4): editar, cambiar el rol, desactivar. Solo admin.
 import { route } from "@/lib/api";
 import { updateUser } from "@/services/users";
 

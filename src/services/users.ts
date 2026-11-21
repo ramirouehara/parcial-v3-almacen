@@ -1,7 +1,7 @@
 /**
- * Users service (RF-U4, RF-U5). Admin only.
- * Every function follows the order of §10.2: validate, check permission,
- * apply the rules, return the public shape (never the password hash).
+ * Servicio de usuarios (RF-U4, RF-U5). Solo para admin.
+ * Cada función sigue el orden del §10.2: validar, comprobar el permiso,
+ * aplicar las reglas y devolver la forma pública (nunca el hash de la contraseña).
  */
 import { randomBytes } from "node:crypto";
 import { and, asc, eq, like, or, type SQL } from "drizzle-orm";
@@ -14,7 +14,7 @@ import { createUserSchema, listUsersSchema, updateUserSchema } from "@/schemas/u
 import { hashPassword } from "./auth";
 import { requireAdmin, type AuthUser } from "./permissions";
 
-/** What the API returns for a user: everything except the password hash. */
+/** Lo que devuelve la API de un usuario: todo, menos el hash de la contraseña. */
 export type PublicUser = Omit<Usuario, "passwordHash" | "creadoEn"> & { creadoEn: string };
 
 const toPublicUser = (u: Usuario): PublicUser => ({
@@ -37,7 +37,7 @@ async function findUser(id: number): Promise<Usuario> {
   return user;
 }
 
-/** GET /api/usuarios: search by name or email, filter by active, paginated. */
+/** GET /api/usuarios: busca por nombre o email, filtra por activo, con páginas. */
 export async function listUsers(user: AuthUser, query: unknown): Promise<Paginated<PublicUser>> {
   const { q, activo, page, pageSize } = parseInput(listUsersSchema, query);
   requireAdmin(user);
@@ -60,9 +60,9 @@ export async function listUsers(user: AuthUser, query: unknown): Promise<Paginat
 }
 
 /**
- * Creates the user row (unique email, hashed password).
- * No permission check here: createUser() does it, and the seed uses this
- * directly to create the FIRST admin (RF-U3), when there is no admin yet.
+ * Crea la fila del usuario (email único, contraseña hasheada).
+ * Acá NO se comprueba el permiso: lo hace createUser(), y el seed usa esta
+ * función directo para crear el PRIMER admin (RF-U3), cuando todavía no hay ninguno.
  */
 export async function insertUser(input: unknown): Promise<PublicUser> {
   const data = parseInput(createUserSchema, input);
@@ -88,7 +88,7 @@ export async function createUser(user: AuthUser, input: unknown): Promise<Public
   return insertUser(input);
 }
 
-/** PATCH /api/usuarios/{id} (RF-U4): edit, change role, activate or deactivate. */
+/** PATCH /api/usuarios/{id} (RF-U4): editar, cambiar el rol, activar o desactivar. */
 export async function updateUser(user: AuthUser, id: unknown, input: unknown): Promise<PublicUser> {
   const userId = parseInput(idParam, id);
   const changes = parseInput(updateUserSchema, input);
@@ -96,7 +96,7 @@ export async function updateUser(user: AuthUser, id: unknown, input: unknown): P
 
   const target = await findUser(userId);
 
-  // An admin cannot lock themselves out: no self-deactivation, no losing the admin role.
+  // Un admin no se puede dejar afuera: no puede desactivarse ni quitarse el rol de admin.
   const isSelf = target.id === user.id;
   if (isSelf && (changes.activo === false || (changes.rol && changes.rol !== "admin"))) {
     throw new ApiError(
@@ -117,15 +117,15 @@ export async function updateUser(user: AuthUser, id: unknown, input: unknown): P
 
 /**
  * POST /api/usuarios/{id}/reset-password (RF-U5).
- * Generates a temporary password and returns it ONCE: only its hash is stored,
- * so nobody can read it again later.
+ * Genera una contraseña temporal y la devuelve UNA sola vez: solo se guarda su hash,
+ * así nadie la puede volver a leer después.
  */
 export async function resetPassword(user: AuthUser, id: unknown): Promise<{ passwordTemporal: string }> {
   const userId = parseInput(idParam, id);
   requireAdmin(user);
   await findUser(userId);
 
-  const passwordTemporal = randomBytes(6).toString("base64url"); // 8 random characters
+  const passwordTemporal = randomBytes(6).toString("base64url"); // 8 caracteres al azar
   await db
     .update(usuarios)
     .set({ passwordHash: await hashPassword(passwordTemporal) })

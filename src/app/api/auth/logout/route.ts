@@ -1,4 +1,4 @@
-// POST /api/auth/logout (RF-U1): 204 and the cookie is deleted.
+// POST /api/auth/logout (RF-U1): 204 y se borra la cookie.
 import { route } from "@/lib/api";
 import { endSession } from "@/lib/session";
 

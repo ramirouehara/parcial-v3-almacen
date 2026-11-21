@@ -1,6 +1,6 @@
 /**
- * Layout primitives (§10.6): pages use these instead of loose HTML tags,
- * so spacing and typography are decided once and look the same everywhere.
+ * Primitivas de layout (§10.6): las páginas usan esto en vez de etiquetas HTML sueltas,
+ * así los espacios y la tipografía se deciden una vez y se ven iguales en todos lados.
  */
 import type { ComponentProps, ElementType } from "react";
 import { cn } from "@/lib/utils";
@@ -18,12 +18,12 @@ const gaps = {
 type Gap = keyof typeof gaps;
 type BoxProps = ComponentProps<"div"> & { gap?: Gap };
 
-/** Stacks children vertically. */
+/** Apila los hijos uno abajo del otro. */
 export function Stack({ gap = 4, className, ...props }: BoxProps) {
   return <div className={cn("flex flex-col", gaps[gap], className)} {...props} />;
 }
 
-/** Puts children side by side; wraps on small screens. */
+/** Pone los hijos uno al lado del otro; en pantallas chicas pasan a la línea siguiente. */
 export function Row({
   gap = 2,
   align = "center",
@@ -46,7 +46,7 @@ export function Row({
   );
 }
 
-/** Responsive grid: one column on phones, more from the `sm` breakpoint. */
+/** Grilla adaptable: una columna en el celular, más desde el tamaño `sm`. */
 export function Grid({ cols = 2, gap = 4, className, ...props }: BoxProps & { cols?: 2 | 3 | 4 }) {
   const colsClass = {
     2: "sm:grid-cols-2",
@@ -65,7 +65,7 @@ const textVariants = {
   error: "text-sm text-destructive",
 } as const;
 
-/** Any piece of text. `as` changes the tag (p by default). */
+/** Cualquier texto. `as` cambia la etiqueta (p por defecto). */
 export function Text({
   variant = "body",
   as: Tag = "p",
@@ -75,7 +75,7 @@ export function Text({
   return <Tag className={cn(textVariants[variant], className)} {...props} />;
 }
 
-/** Section titles: level 1 is the page title. */
+/** Títulos de sección: el nivel 1 es el título de la página. */
 export function Title({
   level = 2,
   className,

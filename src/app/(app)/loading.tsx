@@ -1,8 +1,8 @@
 import { Stack } from "@/components/layout/primitives";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// "Loading" state (§8): Next shows this automatically while a page of
-// (app) fetches its data. The sidebar stays; only the content is replaced.
+// Estado "cargando" (§8): Next muestra esto solo mientras una página de
+// (app) busca sus datos. El panel lateral queda; solo se reemplaza el contenido.
 export default function Loading() {
   return (
     <Stack gap={4} aria-busy="true" aria-label="Cargando">

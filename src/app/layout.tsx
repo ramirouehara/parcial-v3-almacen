@@ -3,7 +3,7 @@ import { Bricolage_Grotesque, Figtree, IBM_Plex_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-// Three fonts, three jobs: titles, body text, and numbers (prices, invoice numbers).
+// Tres fuentes, tres trabajos: títulos, texto común y números (precios, números de factura).
 const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"] });
 const body = Figtree({ variable: "--font-body", subsets: ["latin"] });
 const numbers = IBM_Plex_Mono({
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   description: "Gestión comercial del almacén: ventas, stock y libreta de cuentas corrientes.",
 };
 
-// Root layout: wraps EVERY page, including /login. The sidebar lives in a
-// nested layout (added later) so the login screen stays outside of it.
+// Layout raíz: envuelve TODAS las páginas, incluido /login. El panel lateral vive en un
+// layout anidado (el de (app)), así la pantalla de login queda afuera.
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

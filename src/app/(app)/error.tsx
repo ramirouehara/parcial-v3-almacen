@@ -3,9 +3,9 @@
 import { ErrorState } from "@/components/common/states";
 import { Button } from "@/components/ui/button";
 
-// "Error" state (§8): if a page of (app) throws, Next shows this instead of
-// breaking the whole app. In Next 16 the retry function is called `retry`.
-// (The real error is logged on the server; the user never sees its details.)
+// Estado "error" (§8): si una página de (app) falla, Next muestra esto en vez de
+// romper toda la app. En Next 16 la función para reintentar se llama `retry`.
+// (El error real queda registrado en el servidor; el usuario nunca ve el detalle.)
 export default function AppError({ retry }: { error: Error; retry: () => void }) {
   return (
     <ErrorState

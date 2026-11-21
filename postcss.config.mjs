@@ -1,4 +1,4 @@
-// Tailwind runs as a PostCSS plugin: this is the setup the Next.js docs use
+// Tailwind corre como plugin de PostCSS: es la configuración que usa la documentación de Next.js
 // (node_modules/next/dist/docs/01-app/01-getting-started/11-css.md).
 const config = {
   plugins: {

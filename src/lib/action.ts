@@ -1,9 +1,9 @@
 /**
- * Common wrapper for Server Actions (§10.3).
+ * Envoltorio común para las Server Actions (§10.3).
  *
- * Same job as the route wrapper (session + errors), but instead of throwing
- * it RETURNS the result, so the form can show each error next to its field:
- *   { ok: true, data }   or   { ok: false, error: { code, message, details } }
+ * Hace lo mismo que el envoltorio de rutas (sesión + errores), pero en vez de lanzar
+ * el error lo DEVUELVE, para que el formulario muestre cada error al lado de su campo:
+ *   { ok: true, data }   o   { ok: false, error: { code, message, details } }
  */
 import { revalidatePath } from "next/cache";
 import type { AuthUser } from "@/services/permissions";
@@ -12,7 +12,7 @@ import { getSessionUser } from "./session";
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: ErrorBody };
 
-/** An action that requires a session (all of them except login). */
+/** Una acción que exige sesión (todas, salvo el login). */
 export function action<Args extends unknown[], T>(
   fn: (user: AuthUser, ...args: Args) => Promise<T>,
 ) {
@@ -21,7 +21,7 @@ export function action<Args extends unknown[], T>(
       const user = await getSessionUser();
       if (!user) throw unauthenticated();
       const data = await fn(user, ...args);
-      // The screens show live data: re-render them after a change.
+      // Las pantallas muestran datos en vivo: se vuelven a dibujar después de un cambio.
       revalidatePath("/", "layout");
       return { ok: true, data };
     } catch (err) {
@@ -30,7 +30,7 @@ export function action<Args extends unknown[], T>(
   };
 }
 
-/** The only public action: login (there is no session yet). */
+/** La única acción pública: el login (todavía no hay sesión). */
 export function publicAction<Args extends unknown[], T>(fn: (...args: Args) => Promise<T>) {
   return async (...args: Args): Promise<ActionResult<T>> => {
     try {

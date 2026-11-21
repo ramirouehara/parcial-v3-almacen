@@ -1,6 +1,6 @@
 import { House, Package, ShoppingCart, UserCog, Users } from "lucide-react";
 
-/** The five modules of the sidebar (§4). `adminOnly` hides the link for sellers. */
+/** Los cinco módulos del panel lateral (§4). `adminOnly` oculta el enlace a los vendedores. */
 export const navItems = [
   { href: "/", label: "Inicio", icon: House, adminOnly: false },
   { href: "/ventas", label: "Ventas", icon: ShoppingCart, adminOnly: false },

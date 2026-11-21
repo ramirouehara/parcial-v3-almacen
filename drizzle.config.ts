@@ -1,12 +1,12 @@
-// Configuration for drizzle-kit, the command-line tool that creates and runs
-// migrations (`pnpm run db:generate` and `pnpm run db:migrate`).
-import "dotenv/config"; // drizzle-kit does not read .env by itself
+// Configuración de drizzle-kit, la herramienta de línea de comandos que crea y corre
+// las migraciones (`pnpm run db:generate` y `pnpm run db:migrate`).
+import "dotenv/config"; // drizzle-kit no lee el .env por su cuenta
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "./src/db/schema.ts", // where the tables are defined
-  out: "./src/db/migrations", // where the generated SQL files go
-  dialect: "turso", // libSQL: works with a local file and with Turso
+  schema: "./src/db/schema.ts", // dónde están definidas las tablas
+  out: "./src/db/migrations", // dónde van los archivos SQL generados
+  dialect: "turso", // libSQL: funciona con un archivo local y con Turso
   dbCredentials: {
     url: process.env.DATABASE_URL ?? "file:./data/almacen.db",
     authToken: process.env.DATABASE_AUTH_TOKEN || undefined,

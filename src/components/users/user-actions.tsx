@@ -1,6 +1,6 @@
 "use client";
 
-/** The buttons of each row in the users list: edit, reset password, (de)activate. */
+/** Los botones de cada fila del listado de usuarios: editar, restablecer contraseña, (des)activar. */
 import { useState } from "react";
 import { toast } from "sonner";
 import { KeyRound, Pencil, Power } from "lucide-react";
@@ -83,7 +83,7 @@ export function UserActions({ user }: { user: PublicUser }) {
         onConfirm={toggleActive}
       />
 
-      {/* The temporary password is shown ONCE (§11.3): only its hash is stored. */}
+      {/* La contraseña temporal se muestra UNA sola vez (§11.3): solo se guarda su hash. */}
       <Dialog open={temporaryPassword !== null} onOpenChange={(open) => !open && setTemporaryPassword(null)}>
         <DialogContent>
           <DialogHeader>

@@ -11,7 +11,7 @@ import { changePasswordSchema } from "@/schemas/auth";
 
 const empty = { actual: "", nueva: "" };
 
-/** RF-U5: current password + new one (at least 8 characters). */
+/** RF-U5: contraseña actual + la nueva (al menos 8 caracteres). */
 export function ChangePasswordForm() {
   const form = useForm(changePasswordSchema, empty);
 

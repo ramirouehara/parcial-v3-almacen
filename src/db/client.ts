@@ -1,10 +1,10 @@
 /**
- * Database connection.
+ * Conexión con la base de datos.
  *
- * The same code talks to a local SQLite file in development and to Turso
- * (remote libSQL) in production. The only difference is the environment:
- *   development: DATABASE_URL=file:./data/almacen.db  (no token)
- *   production:  DATABASE_URL=libsql://...turso.io   + DATABASE_AUTH_TOKEN
+ * El mismo código habla con un archivo SQLite local en desarrollo y con Turso
+ * (libSQL remoto) en producción. Lo único que cambia es el entorno:
+ *   desarrollo: DATABASE_URL=file:./data/almacen.db  (sin token)
+ *   producción: DATABASE_URL=libsql://...turso.io   + DATABASE_AUTH_TOKEN
  */
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
@@ -15,6 +15,6 @@ const client = createClient({
   authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
 });
 
-// `db` is what every service imports to read and write.
-// Passing the schema lets Drizzle know the tables and their columns.
+// `db` es lo que importa cada servicio para leer y escribir.
+// Al pasarle el esquema, Drizzle conoce las tablas y sus columnas.
 export const db = drizzle(client, { schema });

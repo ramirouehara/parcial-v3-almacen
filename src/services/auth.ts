@@ -1,6 +1,6 @@
 /**
- * Authentication service: login, session user and password change (RF-U1, RF-U2, RF-U5).
- * It knows nothing about cookies or HTTP: that is the adapters' job (§10.1).
+ * Servicio de autenticación: login, usuario de la sesión y cambio de contraseña (RF-U1, RF-U2, RF-U5).
+ * No sabe nada de cookies ni de HTTP: eso es trabajo de los adaptadores (§10.1).
  */
 import bcrypt from "bcryptjs";
 import { and, eq } from "drizzle-orm";
@@ -11,7 +11,7 @@ import { parseInput } from "@/lib/validation";
 import { changePasswordSchema, loginSchema } from "@/schemas/auth";
 import type { AuthUser } from "./permissions";
 
-/** Passwords are stored only as bcrypt hashes (§8 Seguridad). */
+/** Las contraseñas se guardan solo como hash bcrypt (§8 Seguridad). */
 export function hashPassword(plain: string): Promise<string> {
   return bcrypt.hash(plain, 10);
 }
@@ -24,9 +24,9 @@ const toAuthUser = (u: Usuario): AuthUser => ({
 });
 
 /**
- * RF-U1: checks email and password.
- * Wrong email, wrong password and inactive user (RF-U4) give the SAME
- * error, so nobody can find out which emails exist (§11.3).
+ * RF-U1: comprueba email y contraseña.
+ * Email incorrecto, contraseña incorrecta y usuario inactivo (RF-U4) dan el MISMO
+ * error, para que nadie pueda averiguar qué emails existen (§11.3).
  */
 export async function login(input: unknown): Promise<AuthUser> {
   const { email, password } = parseInput(loginSchema, input);
@@ -39,8 +39,8 @@ export async function login(input: unknown): Promise<AuthUser> {
 }
 
 /**
- * RF-U2 / §10.5: the user is looked up in the database on EVERY request.
- * If an admin deactivates them, they lose access at once, even with a valid cookie.
+ * RF-U2 / §10.5: el usuario se busca en la base de datos en CADA pedido.
+ * Si un admin lo desactiva, pierde el acceso al instante, aunque tenga una cookie válida.
  */
 export async function resolveSessionUser(userId: number | null): Promise<AuthUser | null> {
   if (userId === null) return null;
@@ -50,7 +50,7 @@ export async function resolveSessionUser(userId: number | null): Promise<AuthUse
   return user ? toAuthUser(user) : null;
 }
 
-/** RF-U5: each user changes their own password, confirming the current one. */
+/** RF-U5: cada usuario cambia su propia contraseña, confirmando la actual. */
 export async function changePassword(user: AuthUser, input: unknown): Promise<void> {
   const { actual, nueva } = parseInput(changePasswordSchema, input);
   const row = await db.query.usuarios.findFirst({ where: eq(usuarios.id, user.id) });

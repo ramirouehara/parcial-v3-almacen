@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Row, Stack, Text, Title } from "@/components/layout/primitives";
 
-/** The title block at the top of every screen, with optional buttons on the right. */
+/** El bloque del título arriba de cada pantalla, con botones opcionales a la derecha. */
 export function PageHeader({
   title,
   description,

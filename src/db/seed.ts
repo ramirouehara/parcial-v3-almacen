@@ -1,24 +1,24 @@
 /**
- * Initial data script: `pnpm run db:seed`.
+ * Script de datos iniciales: `pnpm run db:seed`.
  *
- * It starts from an empty database and loads the data THROUGH THE SERVICES,
- * the same ones the app uses (§10.7), so the data follows every rule.
+ * Arranca de una base vacía y carga los datos A TRAVÉS DE LOS SERVICIOS,
+ * los mismos que usa la app (§10.7), así los datos cumplen todas las reglas.
  *
- * For now it only creates the two test users (RF-U3: the first admin is
- * created here). The last commit adds categories, products, customers and invoices.
+ * Por ahora solo crea los dos usuarios de prueba (RF-U3: el primer admin se
+ * crea acá). El último commit agrega categorías, productos, clientes y facturas.
  */
 import { sql } from "drizzle-orm";
 import { db } from "./client";
 import * as t from "./schema";
 import { createUser, insertUser } from "@/services/users";
 
-// Test users, one per role (the README lists them for the defense).
+// Usuarios de prueba, uno por rol (el README los lista para la defensa).
 export const TEST_USERS = {
   admin: { nombre: "Lucía Quispe", email: "admin@reydani.test", password: "admin1234" },
   vendedor: { nombre: "Martín Flores", email: "vendedor@reydani.test", password: "vendedor1234" },
 };
 
-/** Deletes every row, children first so no foreign key is left pointing nowhere. */
+/** Borra todas las filas, primero las hijas, así ninguna clave foránea queda apuntando a la nada. */
 async function clearDatabase() {
   await db.delete(t.movimientosCuenta);
   await db.delete(t.movimientosStock);
@@ -29,7 +29,7 @@ async function clearDatabase() {
   await db.delete(t.productos);
   await db.delete(t.categorias);
   await db.delete(t.usuarios);
-  // Restart the auto-increment counters, so ids start at 1 again.
+  // Reinicia los contadores autoincrementales, así los ids vuelven a empezar en 1.
   await db.run(sql`DELETE FROM sqlite_sequence`);
 }
 
@@ -37,9 +37,9 @@ async function main() {
   console.log("Clearing the database...");
   await clearDatabase();
 
-  // RF-U3: there is no admin yet, so the first one is created directly.
+  // RF-U3: todavía no hay admin, así que el primero se crea directo.
   const admin = await insertUser({ ...TEST_USERS.admin, rol: "admin" });
-  // From here on, everything goes through the normal services, as that admin.
+  // De acá en adelante, todo pasa por los servicios normales, actuando como ese admin.
   await createUser(admin, { ...TEST_USERS.vendedor, rol: "vendedor" });
 
   console.log("Users created:");

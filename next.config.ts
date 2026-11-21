@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
-// cacheComponents and partialPrefetching are intentionally OFF: every screen
-// depends on the logged-in user and on live data (stock, balances), so pages
-// render on each request. That keeps the data flow simple to follow.
+// cacheComponents y partialPrefetching están APAGADOS a propósito: cada pantalla
+// depende del usuario logueado y de datos en vivo (stock, saldos), así que las páginas
+// se arman en cada pedido. Así el recorrido de los datos es fácil de seguir.
 //
-// Tailwind is configured in postcss.config.mjs (the setup from the Next docs).
-// The template's "@tailwindcss/turbopack" loader was removed: in development it
-// served the CSS one save behind.
+// Tailwind se configura en postcss.config.mjs (la forma que indica la documentación de Next).
+// Se sacó el loader "@tailwindcss/turbopack" de la plantilla: en desarrollo
+// servía el CSS con un guardado de atraso.
 const nextConfig: NextConfig = {
-  // The libSQL driver ships native code; Next must load it from node_modules
-  // instead of bundling it.
+  // El driver de libSQL trae código nativo; Next lo tiene que cargar desde node_modules
+  // en vez de empaquetarlo.
   serverExternalPackages: ["@libsql/client", "libsql"],
 };
 

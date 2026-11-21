@@ -1,6 +1,6 @@
 /**
- * The "empty" and "error" states every list needs (§8 Estados completos).
- * The "loading" state lives in src/app/(app)/loading.tsx.
+ * Los estados "vacío" y "error" que necesita todo listado (§8 Estados completos).
+ * El estado "cargando" vive en src/app/(app)/loading.tsx.
  */
 import type { ReactNode } from "react";
 import { CircleAlert, Inbox, Lock } from "lucide-react";
@@ -16,7 +16,7 @@ function StateBox({ icon, title, children }: { icon: ReactNode; title: string; c
   );
 }
 
-/** Nothing to show: says so and invites to act. */
+/** No hay nada para mostrar: lo dice e invita a hacer algo. */
 export function EmptyState({ title, description }: { title: string; description?: string }) {
   return (
     <StateBox icon={<Inbox className="size-8 text-muted-foreground" />} title={title}>
@@ -34,7 +34,7 @@ export function ErrorState({ title, description, children }: { title: string; de
   );
 }
 
-/** Shown to a vendedor who opens an admin screen. The service would answer 403 anyway. */
+/** Se muestra a un vendedor que abre una pantalla de admin. El servicio igual respondería 403. */
 export function ForbiddenState() {
   return (
     <StateBox icon={<Lock className="size-8 text-muted-foreground" />} title="Sin permiso">

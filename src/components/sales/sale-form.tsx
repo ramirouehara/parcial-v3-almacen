@@ -155,7 +155,8 @@ export function SaleForm() {
     <form onSubmit={confirm} noValidate>
       <Grid cols={2} className="items-start sm:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <Stack gap={4}>
-          <Card>
+          {/* overflow-visible: las listas de resultados se despliegan por encima de lo que sigue. */}
+          <Card className="relative z-20 overflow-visible">
             <CardContent>
               <Stack gap={3}>
                 <Title level={3}>Comprador</Title>
@@ -170,7 +171,7 @@ export function SaleForm() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="relative z-10 overflow-visible">
             <CardContent>
               <Stack gap={3}>
                 <Row justify="between">

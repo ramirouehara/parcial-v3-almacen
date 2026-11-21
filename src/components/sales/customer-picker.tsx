@@ -24,6 +24,8 @@ export function CustomerPicker({
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PublicCustomer[]>([]);
+  // Para qué texto son los resultados: si no hay ninguno para lo escrito, se avisa.
+  const [searchedFor, setSearchedFor] = useState("");
   const latest = useRef(0);
 
   useEffect(() => {
@@ -32,7 +34,11 @@ export function CustomerPicker({
     const ticket = ++latest.current;
     const timer = setTimeout(async () => {
       const result = await apiFetch<{ data: PublicCustomer[] }>(`/api/clientes?q=${encodeURIComponent(text)}&pageSize=6`);
-      if (ticket === latest.current && result.ok) setResults(result.data.data);
+      if (ticket === latest.current && result.ok) {
+        // Solo clientes activos: a uno dado de baja no se le vende.
+        setResults(result.data.data.filter((c) => c.activo));
+        setSearchedFor(text);
+      }
     }, 200);
     return () => clearTimeout(timer);
   }, [query]);
@@ -89,24 +95,25 @@ export function CustomerPicker({
       </Row>
       {visible.length > 0 && (
         <Stack gap={0} className="absolute top-11 z-20 w-full rounded-lg border bg-popover shadow-lg">
-          {visible
-            .filter((c) => c.activo)
-            .map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => choose(c)}
-                className="flex justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-accent"
-              >
-                <Text as="span" variant="strong">
-                  {c.nombre}
-                </Text>
-                <Text as="span" variant="small">
-                  {c.tipoDoc} {formatDocument(c.tipoDoc, c.nroDoc)}
-                </Text>
-              </button>
-            ))}
+          {visible.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => choose(c)}
+              className="flex justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-accent"
+            >
+              <Text as="span" variant="strong">
+                {c.nombre}
+              </Text>
+              <Text as="span" variant="small">
+                {c.tipoDoc} {formatDocument(c.tipoDoc, c.nroDoc)}
+              </Text>
+            </button>
+          ))}
         </Stack>
+      )}
+      {query.trim() !== "" && searchedFor === query.trim() && visible.length === 0 && (
+        <Text variant="small">No hay clientes con ese nombre o documento. Podés darlo de alta con el botón de al lado.</Text>
       )}
     </Stack>
   );

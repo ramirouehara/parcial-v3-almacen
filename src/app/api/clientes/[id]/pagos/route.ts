@@ -1,7 +1,7 @@
 // POST /api/clientes/{id}/pagos (RF-C5): registra el pago y devuelve el recibo. Ambos roles.
 import { route } from "@/lib/api";
-import { registerPayment } from "@/servicios/pagos";
+import { registrarPago } from "@/servicios/pagos";
 
-export const POST = route<{ id: string }>(async ({ user, params, body }) => registerPayment(user, params.id, await body()), {
+export const POST = route<{ id: string }>(async ({ user, params, body }) => registrarPago(user, params.id, await body()), {
   status: 201,
 });

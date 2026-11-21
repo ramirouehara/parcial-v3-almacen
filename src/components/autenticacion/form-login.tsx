@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { loginAction } from "@/acciones/autenticacion";
+import { ingresarAccion } from "@/acciones/autenticacion";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { Stack } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ export function LoginForm() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await form.submit(loginAction, {
+    await form.submit(ingresarAccion, {
       onSuccess: () => {
         router.replace("/");
         router.refresh();

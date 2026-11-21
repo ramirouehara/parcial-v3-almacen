@@ -10,7 +10,7 @@ import { formatDateTime, formatDocument, formatMoney } from "@/lib/formato";
 import { medioPagoLabels } from "@/lib/etiquetas";
 import { requirePageUser } from "@/lib/sesion";
 import { STORE } from "@/lib/comercio";
-import { getPayment } from "@/servicios/pagos";
+import { obtenerPago } from "@/servicios/pagos";
 
 export const metadata: Metadata = { title: "Recibo" };
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = { title: "Recibo" };
 export default async function ReceiptPage({ params }: PageProps<"/clientes/recibos/[id]">) {
   const user = await requirePageUser();
   const { id } = await params;
-  const receipt = await getPayment(user, id);
+  const receipt = await obtenerPago(user, id);
 
   return (
     <>

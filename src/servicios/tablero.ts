@@ -7,7 +7,7 @@ import { and, desc, eq, gt, gte, lt, sql } from "drizzle-orm";
 import { db } from "@/db/conexion";
 import { clientes, facturaItems, facturas, productos } from "@/db/esquema";
 import { addDays, startOfDayAR, todayAR } from "@/lib/formato";
-import { balanceSql } from "./clientes";
+import { saldoSql } from "./clientes";
 import type { AuthUser } from "./permisos";
 
 type FormaPago = "contado" | "tarjeta" | "cuenta_corriente";
@@ -35,7 +35,7 @@ async function salesBetween(from: Date, to: Date) {
 }
 
 /** GET /api/tablero (RF-T1 a RF-T3): todo lo que muestra la pantalla de inicio, en una sola respuesta. */
-export async function getDashboard(user: AuthUser, now = new Date()): Promise<Dashboard> {
+export async function obtenerTablero(user: AuthUser, now = new Date()): Promise<Dashboard> {
   const today = todayAR(now);
   const dayStart = startOfDayAR(today);
   const dayEnd = startOfDayAR(addDays(today, 1));
@@ -46,9 +46,9 @@ export async function getDashboard(user: AuthUser, now = new Date()): Promise<Da
   const hoy = await salesBetween(dayStart, dayEnd);
   const mes = await salesBetween(monthStart, dayEnd);
   const [debt] = await db
-    .select({ total: sql<number>`coalesce(sum(${balanceSql}), 0)`, clientes: sql<number>`count(*)` })
+    .select({ total: sql<number>`coalesce(sum(${saldoSql}), 0)`, clientes: sql<number>`count(*)` })
     .from(clientes)
-    .where(gt(balanceSql, 0));
+    .where(gt(saldoSql, 0));
   const bajo = await db.$count(
     productos,
     and(eq(productos.activo, true), lt(productos.existencia, productos.stockMinimo)),

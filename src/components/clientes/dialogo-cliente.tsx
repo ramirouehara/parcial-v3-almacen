@@ -6,7 +6,7 @@
  * por eso avisa con `onSaved` qué cliente se creó.
  */
 import { useState, type ReactNode } from "react";
-import { createCustomerAction, updateCustomerAction } from "@/acciones/clientes";
+import { crearClienteAccion, actualizarClienteAccion } from "@/acciones/clientes";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { MoneyInput } from "@/components/comunes/campo-importe";
 import { Grid, Row, Stack } from "@/components/maquetacion/primitivas";
@@ -93,12 +93,12 @@ function CustomerForm({ customer, onDone }: { customer?: PublicCustomer; onDone:
     // "submit" seguiría subiendo por el árbol de React y confirmaría la venta.
     event.stopPropagation();
     if (editing) {
-      await form.submit((values) => updateCustomerAction(customer.id, values), {
+      await form.submit((values) => actualizarClienteAccion(customer.id, values), {
         success: "Cliente actualizado.",
         onSuccess: onDone,
       });
     } else {
-      await form.submit(createCustomerAction, { success: "Cliente creado.", onSuccess: onDone });
+      await form.submit(crearClienteAccion, { success: "Cliente creado.", onSuccess: onDone });
     }
   }
 

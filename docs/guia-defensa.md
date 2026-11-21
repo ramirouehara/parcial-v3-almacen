@@ -39,7 +39,7 @@ Si preguntan «¿dónde se controla X?», la respuesta es un archivo de `src/ser
 | ¿Dónde se expone la API para agregar un producto? | `POST /api/productos`, una línea que llama al servicio | `src/app/api/productos/route.ts:7` → `src/servicios/productos.ts:109` |
 | ¿Qué responde si el código ya existe? | `409 CODIGO_DUPLICADO` con el detalle en el campo `codigo` | `src/servicios/productos.ts:50` |
 | ¿Dónde se verifica la sesión antes de atender un pedido? | Tres barreras: el proxy, `requirePageUser()` en las páginas y `route()` / `action()` en la API y las acciones. El usuario se busca en la base en cada pedido | `src/proxy.ts:12`, `src/lib/sesion.ts:40`, `src/lib/api.ts:47`, `src/lib/accion.ts:16` |
-| ¿Qué pasa si un vendedor llama a una ruta de admin? Muéstrenlo | `403 SIN_PERMISO`, lo decide `requireAdmin()` en el servicio. Ver sección 4 | `src/servicios/permisos.ts:13` |
+| ¿Qué pasa si un vendedor llama a una ruta de admin? Muéstrenlo | `403 SIN_PERMISO`, lo decide `exigirAdmin()` en el servicio. Ver sección 4 | `src/servicios/permisos.ts:13` |
 | ¿Dónde se arma la respuesta de error? | Los servicios lanzan `ApiError`; `errorResponse()` arma `{ error: { code, message, details } }` | `src/lib/errores.ts:38`, `src/lib/api.ts:41` |
 | ¿Por qué el cliente no manda el precio ni el total? | Porque se podría falsear. El servidor toma el precio del catálogo y calcula todo; el esquema rechaza un campo `precio` | `src/servicios/facturas.ts:118`, `src/esquemas/facturas.ts:13` |
 
@@ -52,9 +52,9 @@ Si preguntan «¿dónde se controla X?», la respuesta es un archivo de `src/ser
 | ¿Dónde se asegura que una factura se grabe completa o nada? | Todo pasa dentro de `writeTransaction()`: si un paso lanza error, se deshace todo | `src/servicios/facturas.ts:76`, `src/db/conexion.ts:36` |
 | ¿Dónde se asigna el número? ¿Cómo se evitan huecos? | Al confirmar, como «último + 1» dentro de la transacción, que corre de a una. Si la venta falla, no se gasta ningún número | `src/servicios/facturas.ts:146`, `:56` |
 | Si cambia el precio de un producto, ¿qué pasa con las facturas ya emitidas? | Nada: cada renglón guarda su precio y su descripción copiados (regla 3) | `src/servicios/facturas.ts:118`, `src/db/esquema.ts` (`factura_items`) |
-| ¿Dónde se impide vender en cuenta corriente a consumidor final? | En el paso 2 de `createInvoice` | `src/servicios/facturas.ts:102` |
+| ¿Dónde se impide vender en cuenta corriente a consumidor final? | En el paso 2 de `crearFactura` | `src/servicios/facturas.ts:102` |
 | ¿Dónde se controla el límite de crédito? | En el paso 5: saldo actual + total no puede pasar el límite | `src/servicios/facturas.ts:138` |
-| ¿Dónde se impide un pago mayor que la deuda? | En `registerPayment` | `src/servicios/pagos.ts:33` |
+| ¿Dónde se impide un pago mayor que la deuda? | En `registrarPago` | `src/servicios/pagos.ts:33` |
 | ¿Qué hace el sistema al anular una factura? | Marca la factura como anulada (no se borra), reingresa el stock con movimientos de anulación y, si fue a cuenta, acredita el total. Todo en una transacción | `src/servicios/facturas.ts:337` |
 | ¿Dónde queda registrado cada movimiento de stock? | En `movimientos_stock`, lo escribe `moverStock()`. Se ve en la ficha del producto y en Productos → Existencias | `src/servicios/stock.ts:52` |
 
@@ -64,7 +64,7 @@ Si preguntan «¿dónde se controla X?», la respuesta es un archivo de `src/ser
 | --- | --- | --- |
 | ¿En qué parte se ingresa el número de tarjeta? | En ninguna: solo se piden tipo, marca y últimos 4 dígitos. Si llega el número completo, el esquema lo rechaza con 422 | `src/esquemas/facturas.ts:32`, `src/db/esquema.ts:186` |
 | ¿Cómo se guardan las contraseñas? | Como hash bcrypt; nunca la contraseña en sí | `src/servicios/autenticacion.ts:15` |
-| ¿Dónde se verifica el rol? ¿Alcanza con ocultar el botón? | En el servicio, con `requireAdmin()`. No alcanza: con `curl` el botón no existe y la API igual responde 403 | `src/servicios/permisos.ts:13` |
+| ¿Dónde se verifica el rol? ¿Alcanza con ocultar el botón? | En el servicio, con `exigirAdmin()`. No alcanza: con `curl` el botón no existe y la API igual responde 403 | `src/servicios/permisos.ts:13` |
 | ¿Dónde está el secreto de la sesión? ¿Por qué no está en el repo? | En la variable `SESSION_SECRET` (`.env` local, variables de Vercel en producción). Con él cualquiera fabricaría una cookie de admin | `src/lib/token-sesion.ts:18` |
 | Si se desactiva a un usuario con la sesión abierta, ¿qué pasa? | Pierde el acceso en el próximo pedido: el usuario se busca en la base en cada pedido y tiene que estar activo | `src/servicios/autenticacion.ts:45` |
 
@@ -134,7 +134,7 @@ pnpm test
 | Agregar «Mercado Pago» como medio de pago | `src/esquemas/clientes.ts:5` (`mediosPago`), `src/db/esquema.ts:157` (enum de `pagos.medio`) + migración, y la etiqueta en `src/lib/etiquetas.ts` |
 | Máximo 50 unidades de un producto por venta | `src/esquemas/facturas.ts:13`: `.max(50, { error: "Máximo 50 unidades." })` en `cantidad`. Se aplica en la pantalla y en la API a la vez |
 | Teléfono del cliente con al menos 8 dígitos | `src/esquemas/clientes.ts:32`: cambiar `telefono: optionalText(40)` por una regla que cuente dígitos. Formulario y servidor usan el mismo esquema |
-| Agregar una columna al listado de facturas | `src/app/(app)/ventas/page.tsx`: un `TableHead` y un `TableCell`; si el dato no viene, sumarlo en `listInvoices` (`src/servicios/facturas.ts:265`) |
+| Agregar una columna al listado de facturas | `src/app/(app)/ventas/page.tsx`: un `TableHead` y un `TableCell`; si el dato no viene, sumarlo en `listarFacturas` (`src/servicios/facturas.ts:265`) |
 | Punto de venta `0002` | `src/lib/comercio.ts:17`: `PUNTO_VENTA = 2`. La numeración arranca en `0002-00000001` |
 
 ## 6. Guion de la demo (10 minutos, sobre la URL pública)

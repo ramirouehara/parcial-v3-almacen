@@ -12,7 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { LogOut, Menu } from "lucide-react";
-import { logoutAction } from "@/acciones/autenticacion";
+import { salirAccion } from "@/acciones/autenticacion";
 import { RoleBadge } from "@/components/comunes/etiqueta-estado";
 import { Logo } from "@/components/comunes/logo";
 import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
@@ -111,7 +111,7 @@ export function AppShell({ user, children }: { user: AuthUser; children: ReactNo
             </Text>
           </Link>
           <RoleBadge rol={user.rol} />
-          <form action={logoutAction}>
+          <form action={salirAccion}>
             <Button type="submit" variant="ghost" size="sm" aria-label="Salir">
               <LogOut />
               <span className="hidden sm:inline">Salir</span>

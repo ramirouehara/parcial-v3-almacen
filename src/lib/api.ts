@@ -8,7 +8,7 @@
  *  4. convierte cualquier error en la forma estándar del §11.1.
  *
  * Así cada ruta es solo "llamar al servicio y responder". Ejemplo:
- *   export const GET = route(({ user, query }) => listUsers(user, query));
+ *   export const GET = route(({ user, query }) => listarUsuarios(user, query));
  */
 import type { NextRequest } from "next/server";
 import type { AuthUser } from "@/servicios/permisos";

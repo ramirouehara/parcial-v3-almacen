@@ -2,7 +2,7 @@
 
 /** Alta o cambio de nombre de una categoría (RF-P7). Solo admin. */
 import { useState, type ReactNode } from "react";
-import { createCategoryAction, updateCategoryAction } from "@/acciones/productos";
+import { crearCategoriaAccion, actualizarCategoriaAccion } from "@/acciones/productos";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { Stack } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -45,12 +45,12 @@ function CategoryForm({ category, onDone }: { category?: { id: number; nombre: s
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (category) {
-      await form.submit((values) => updateCategoryAction(category.id, values), {
+      await form.submit((values) => actualizarCategoriaAccion(category.id, values), {
         success: "Categoría actualizada.",
         onSuccess: onDone,
       });
     } else {
-      await form.submit(createCategoryAction, { success: "Categoría creada.", onSuccess: onDone });
+      await form.submit(crearCategoriaAccion, { success: "Categoría creada.", onSuccess: onDone });
     }
   }
 

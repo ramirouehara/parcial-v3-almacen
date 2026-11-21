@@ -12,7 +12,7 @@ import { addDays, formatInvoiceNumber, startOfDayAR } from "@/lib/formato";
 import { parseInput } from "@/lib/validacion";
 import { idParam, type Paginated } from "@/esquemas/comunes";
 import { listMovementsSchema, stockMovementSchema } from "@/esquemas/productos";
-import { requireAdmin, type AuthUser } from "./permisos";
+import { exigirAdmin, type AuthUser } from "./permisos";
 
 type MovementType = "venta" | "anulacion" | "ingreso" | "egreso";
 
@@ -82,10 +82,10 @@ export async function moverStock(tx: Tx, move: StockMove): Promise<{ id: number;
 }
 
 /** POST /api/productos/{id}/movimientos (RF-P4, RF-P5). Solo admin. */
-export async function registerMovement(user: AuthUser, productId: unknown, input: unknown): Promise<PublicMovement> {
+export async function registrarMovimiento(user: AuthUser, productId: unknown, input: unknown): Promise<PublicMovement> {
   const id = parseInput(idParam, productId);
   const data = parseInput(stockMovementSchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   const movementId = await writeTransaction(async (tx) => {
     const result = await moverStock(tx, {
@@ -140,7 +140,7 @@ async function selectMovements(where: SQL | undefined, limit: number, offset: nu
  * GET /api/movimientos-stock y GET /api/productos/{id}/movimientos (RF-P6).
  * Del más nuevo al más viejo. `desde` y `hasta` son días en hora de Argentina (§11.1).
  */
-export async function listMovements(user: AuthUser, query: unknown): Promise<Paginated<PublicMovement>> {
+export async function listarMovimientos(user: AuthUser, query: unknown): Promise<Paginated<PublicMovement>> {
   const { productoId, tipo, desde, hasta, page, pageSize } = parseInput(listMovementsSchema, query);
 
   const filters: SQL[] = [];
@@ -156,9 +156,9 @@ export async function listMovements(user: AuthUser, query: unknown): Promise<Pag
 }
 
 /** GET /api/productos/{id}/movimientos: el historial de un producto. */
-export async function listProductMovements(user: AuthUser, productId: unknown, query: unknown) {
+export async function listarMovimientosDeProducto(user: AuthUser, productId: unknown, query: unknown) {
   const id = parseInput(idParam, productId);
   const product = await db.query.productos.findFirst({ where: eq(productos.id, id) });
   if (!product) throw notFound("El producto");
-  return listMovements(user, { ...(query as object), productoId: String(id) });
+  return listarMovimientos(user, { ...(query as object), productoId: String(id) });
 }

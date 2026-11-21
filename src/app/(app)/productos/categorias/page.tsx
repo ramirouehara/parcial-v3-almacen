@@ -10,7 +10,7 @@ import { ProductsTabs } from "@/components/productos/pestanas-productos";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { requirePageUser } from "@/lib/sesion";
-import { listCategories } from "@/servicios/categorias";
+import { listarCategorias } from "@/servicios/categorias";
 
 export const metadata: Metadata = { title: "Categorías" };
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = { title: "Categorías" };
 export default async function CategoriesPage() {
   const user = await requirePageUser();
   const isAdmin = user.rol === "admin";
-  const categories = await listCategories(user, { todas: isAdmin ? "true" : "false" });
+  const categories = await listarCategorias(user, { todas: isAdmin ? "true" : "false" });
 
   return (
     <>

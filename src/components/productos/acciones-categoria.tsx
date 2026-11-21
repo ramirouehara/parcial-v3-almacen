@@ -3,7 +3,7 @@
 /** Botones de cada categoría (solo admin): renombrar y desactivar / reactivar (RF-P7). */
 import { toast } from "sonner";
 import { Pencil, Power } from "lucide-react";
-import { updateCategoryAction } from "@/acciones/productos";
+import { actualizarCategoriaAccion } from "@/acciones/productos";
 import { ConfirmAction } from "@/components/comunes/confirmar-accion";
 import { Row } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { CategoryFormDialog } from "./dialogo-categoria";
 
 export function CategoryActions({ category }: { category: PublicCategory }) {
   async function toggleActive() {
-    const result = await updateCategoryAction(category.id, { activa: !category.activa });
+    const result = await actualizarCategoriaAccion(category.id, { activa: !category.activa });
     if (!result.ok) {
       toast.error(result.error.message);
       return false;

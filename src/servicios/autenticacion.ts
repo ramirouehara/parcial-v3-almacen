@@ -12,7 +12,7 @@ import { changePasswordSchema, loginSchema } from "@/esquemas/autenticacion";
 import type { AuthUser } from "./permisos";
 
 /** Las contraseñas se guardan solo como hash bcrypt (§8 Seguridad). */
-export function hashPassword(plain: string): Promise<string> {
+export function hashearContrasena(plain: string): Promise<string> {
   return bcrypt.hash(plain, 10);
 }
 
@@ -42,7 +42,7 @@ export async function login(input: unknown): Promise<AuthUser> {
  * RF-U2 / §10.5: el usuario se busca en la base de datos en CADA pedido.
  * Si un admin lo desactiva, pierde el acceso al instante, aunque tenga una cookie válida.
  */
-export async function resolveSessionUser(userId: number | null): Promise<AuthUser | null> {
+export async function buscarUsuarioDeSesion(userId: number | null): Promise<AuthUser | null> {
   if (userId === null) return null;
   const user = await db.query.usuarios.findFirst({
     where: and(eq(usuarios.id, userId), eq(usuarios.activo, true)),
@@ -51,7 +51,7 @@ export async function resolveSessionUser(userId: number | null): Promise<AuthUse
 }
 
 /** RF-U5: cada usuario cambia su propia contraseña, confirmando la actual. */
-export async function changePassword(user: AuthUser, input: unknown): Promise<void> {
+export async function cambiarContrasena(user: AuthUser, input: unknown): Promise<void> {
   const { actual, nueva } = parseInput(changePasswordSchema, input);
   const row = await db.query.usuarios.findFirst({ where: eq(usuarios.id, user.id) });
   if (!row || !(await bcrypt.compare(actual, row.passwordHash))) {
@@ -61,6 +61,6 @@ export async function changePassword(user: AuthUser, input: unknown): Promise<vo
   }
   await db
     .update(usuarios)
-    .set({ passwordHash: await hashPassword(nueva) })
+    .set({ passwordHash: await hashearContrasena(nueva) })
     .where(eq(usuarios.id, user.id));
 }

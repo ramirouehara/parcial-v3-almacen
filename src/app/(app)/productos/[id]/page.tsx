@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatMoney } from "@/lib/formato";
 import { requirePageUser } from "@/lib/sesion";
-import { listCategories } from "@/servicios/categorias";
-import { getProduct } from "@/servicios/productos";
-import { listProductMovements } from "@/servicios/stock";
+import { listarCategorias } from "@/servicios/categorias";
+import { obtenerProducto } from "@/servicios/productos";
+import { listarMovimientosDeProducto } from "@/servicios/stock";
 
 export const metadata: Metadata = { title: "Producto" };
 
@@ -27,11 +27,11 @@ export default async function ProductPage({ params, searchParams }: PageProps<"/
   const { id } = await params;
   const query = (await searchParams) as Record<string, string | undefined>;
 
-  // Si el producto no existe, getProduct lanza 404 y lo muestra error.tsx.
-  const product = await getProduct(user, id);
+  // Si el producto no existe, obtenerProducto lanza 404 y lo muestra error.tsx.
+  const product = await obtenerProducto(user, id);
   const [movements, categories] = await Promise.all([
-    listProductMovements(user, id, query),
-    isAdmin ? listCategories(user) : Promise.resolve([]),
+    listarMovimientosDeProducto(user, id, query),
+    isAdmin ? listarCategorias(user) : Promise.resolve([]),
   ]);
 
   return (

@@ -2,10 +2,10 @@
 
 /** Server Actions de usuarios (RF-U4, RF-U5). Los mismos servicios que /api/usuarios. */
 import { action } from "@/lib/accion";
-import { createUser, resetPassword, updateUser } from "@/servicios/usuarios";
+import { crearUsuario, restablecerContrasena, actualizarUsuario } from "@/servicios/usuarios";
 
-export const createUserAction = action((user, input: unknown) => createUser(user, input));
+export const crearUsuarioAccion = action((user, input: unknown) => crearUsuario(user, input));
 
-export const updateUserAction = action((user, id: number, input: unknown) => updateUser(user, id, input));
+export const actualizarUsuarioAccion = action((user, id: number, input: unknown) => actualizarUsuario(user, id, input));
 
-export const resetPasswordAction = action((user, id: number) => resetPassword(user, id));
+export const restablecerContrasenaAccion = action((user, id: number) => restablecerContrasena(user, id));

@@ -6,7 +6,7 @@
  * cambia con "Restablecer contraseña" o la cambia el propio usuario en /perfil).
  */
 import { useState, type ReactNode } from "react";
-import { createUserAction, updateUserAction } from "@/acciones/usuarios";
+import { crearUsuarioAccion, actualizarUsuarioAccion } from "@/acciones/usuarios";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { Stack } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -60,12 +60,12 @@ function UserForm({ user, onDone }: { user?: PublicUser; onDone: () => void }) {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (editing) {
-      await form.submit((values) => updateUserAction(user.id, values), {
+      await form.submit((values) => actualizarUsuarioAccion(user.id, values), {
         success: "Usuario actualizado.",
         onSuccess: onDone,
       });
     } else {
-      await form.submit(createUserAction, { success: "Usuario creado.", onSuccess: onDone });
+      await form.submit(crearUsuarioAccion, { success: "Usuario creado.", onSuccess: onDone });
     }
   }
 

@@ -16,13 +16,13 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "./conexion";
 import * as t from "./esquema";
 import { addDays, startOfDayAR, todayAR } from "@/lib/formato";
-import { createCategory } from "@/servicios/categorias";
-import { balanceOf, createCustomer } from "@/servicios/clientes";
-import { cancelInvoice, createInvoice } from "@/servicios/facturas";
-import { registerPayment } from "@/servicios/pagos";
+import { crearCategoria } from "@/servicios/categorias";
+import { saldoDe, crearCliente } from "@/servicios/clientes";
+import { anularFactura, crearFactura } from "@/servicios/facturas";
+import { registrarPago } from "@/servicios/pagos";
 import type { AuthUser } from "@/servicios/permisos";
-import { createProduct } from "@/servicios/productos";
-import { createUser, insertUser } from "@/servicios/usuarios";
+import { crearProducto } from "@/servicios/productos";
+import { crearUsuario, insertarUsuario } from "@/servicios/usuarios";
 
 // Usuarios de prueba, uno por rol (el README los lista para la defensa).
 export const TEST_USERS = {
@@ -129,17 +129,17 @@ async function main() {
   const firstDay = addDays(today, -29);
 
   // RF-U3: todavía no hay admin, así que el primero se crea directo.
-  const admin: AuthUser = await insertUser({ ...TEST_USERS.admin, rol: "admin" });
+  const admin: AuthUser = await insertarUsuario({ ...TEST_USERS.admin, rol: "admin" });
   // De acá en adelante, todo pasa por los servicios normales, actuando como ese admin.
-  const vendedor: AuthUser = await createUser(admin, { ...TEST_USERS.vendedor, rol: "vendedor" });
+  const vendedor: AuthUser = await crearUsuario(admin, { ...TEST_USERS.vendedor, rol: "vendedor" });
 
   console.log("Cargando categorías y productos...");
   const categories = [];
-  for (const nombre of CATEGORIES) categories.push(await createCategory(admin, { nombre }));
+  for (const nombre of CATEGORIES) categories.push(await crearCategoria(admin, { nombre }));
   const products = [];
   for (const [codigo, descripcion, cat, pesos, stockMinimo, stockInicial] of PRODUCTS) {
     products.push(
-      await createProduct(admin, {
+      await crearProducto(admin, {
         codigo,
         descripcion,
         categoriaId: categories[cat].id,
@@ -156,7 +156,7 @@ async function main() {
   const customers = [];
   for (const [tipoDoc, nroDoc, nombre, domicilio, telefono, cuentaCorriente, limite] of CUSTOMERS) {
     customers.push(
-      await createCustomer(vendedor, {
+      await crearCliente(vendedor, {
         tipoDoc,
         nroDoc,
         nombre,
@@ -210,11 +210,11 @@ async function main() {
     const seller = n % 2 === 0 ? vendedor : admin;
     let invoice;
     try {
-      invoice = await createInvoice(seller, { clienteId: cliente?.id ?? null, items, pago });
+      invoice = await crearFactura(seller, { clienteId: cliente?.id ?? null, items, pago });
     } catch (err) {
       // Si una venta a cuenta supera el límite (regla 7), se cobra de contado, como en el mostrador.
       if ((err as { code?: string }).code !== "LIMITE_CREDITO_EXCEDIDO") throw err;
-      invoice = await createInvoice(seller, { clienteId: cliente?.id ?? null, items, pago: { forma: "contado" } });
+      invoice = await crearFactura(seller, { clienteId: cliente?.id ?? null, items, pago: { forma: "contado" } });
     }
     await backdateInvoice(invoice.id, date);
     invoices.push({ id: invoice.id, forma: invoice.pago.forma });
@@ -226,15 +226,15 @@ async function main() {
   // Van ANTES de los pagos: así el crédito de la anulación nunca deja saldo a favor (regla 8).
   const toCancel = [invoices.find((i) => i.forma === "contado"), invoices.find((i) => i.forma === "cuenta_corriente")];
   for (const invoice of toCancel) {
-    if (invoice) await cancelInvoice(admin, invoice.id, { motivo: "Error en la carga de cantidades" });
+    if (invoice) await anularFactura(admin, invoice.id, { motivo: "Error en la carga de cantidades" });
   }
 
   for (const [index, customer] of accountCustomers.slice(0, 4).entries()) {
-    const debt = await balanceOf(customer.id);
+    const debt = await saldoDe(customer.id);
     if (debt <= 0) continue;
     // Un pago parcial redondo: la mitad de la deuda, en pesos enteros.
     const importe = Math.max(100, Math.floor(debt / 2 / 100) * 100);
-    const receipt = await registerPayment(vendedor, customer.id, {
+    const receipt = await registrarPago(vendedor, customer.id, {
       importe,
       medio: random.pick(["efectivo", "transferencia", "tarjeta_debito"] as const),
     });

@@ -9,17 +9,17 @@
 import { redirect } from "next/navigation";
 import { action, publicAction } from "@/lib/accion";
 import { endSession, startSession } from "@/lib/sesion";
-import { changePassword, login } from "@/servicios/autenticacion";
+import { cambiarContrasena, login } from "@/servicios/autenticacion";
 
-export const loginAction = publicAction(async (input: unknown) => {
+export const ingresarAccion = publicAction(async (input: unknown) => {
   const user = await login(input);
   await startSession(user.id);
   return user;
 });
 
-export async function logoutAction(): Promise<void> {
+export async function salirAccion(): Promise<void> {
   await endSession();
   redirect("/login");
 }
 
-export const changePasswordAction = action((user, input: unknown) => changePassword(user, input));
+export const cambiarContrasenaAccion = action((user, input: unknown) => cambiarContrasena(user, input));

@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { KeyRound, Pencil, Power } from "lucide-react";
-import { resetPasswordAction, updateUserAction } from "@/acciones/usuarios";
+import { restablecerContrasenaAccion, actualizarUsuarioAccion } from "@/acciones/usuarios";
 import { ConfirmAction } from "@/components/comunes/confirmar-accion";
 import { Row, Stack, Text } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export function UserActions({ user }: { user: PublicUser }) {
   const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
 
   async function toggleActive() {
-    const result = await updateUserAction(user.id, { activo: !user.activo });
+    const result = await actualizarUsuarioAccion(user.id, { activo: !user.activo });
     if (!result.ok) {
       toast.error(result.error.message);
       return false;
@@ -33,7 +33,7 @@ export function UserActions({ user }: { user: PublicUser }) {
   }
 
   async function reset() {
-    const result = await resetPasswordAction(user.id);
+    const result = await restablecerContrasenaAccion(user.id);
     if (!result.ok) {
       toast.error(result.error.message);
       return false;

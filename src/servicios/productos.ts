@@ -10,7 +10,7 @@ import { ApiError, notFound } from "@/lib/errores";
 import { parseInput } from "@/lib/validacion";
 import { idParam, type Paginated } from "@/esquemas/comunes";
 import { createProductSchema, listProductsSchema, updateProductSchema } from "@/esquemas/productos";
-import { requireAdmin, type AuthUser } from "./permisos";
+import { exigirAdmin, type AuthUser } from "./permisos";
 import { moverStock } from "./stock";
 
 /** Lo que devuelve la API de un producto (§11.4). */
@@ -62,7 +62,7 @@ async function findActiveCategory(id: number) {
 }
 
 /** GET /api/productos/{id}. */
-export async function getProduct(user: AuthUser, id: unknown): Promise<PublicProduct> {
+export async function obtenerProducto(user: AuthUser, id: unknown): Promise<PublicProduct> {
   const productId = parseInput(idParam, id);
   const [row] = await db
     .select(productColumns)
@@ -77,9 +77,9 @@ export async function getProduct(user: AuthUser, id: unknown): Promise<PublicPro
  * GET /api/productos (RF-P1): búsqueda por código o descripción, filtro por categoría,
  * bajo mínimo y estado. Ver los inactivos ("false" o "todos") es solo para el admin.
  */
-export async function listProducts(user: AuthUser, query: unknown): Promise<Paginated<PublicProduct>> {
+export async function listarProductos(user: AuthUser, query: unknown): Promise<Paginated<PublicProduct>> {
   const { q, categoriaId, bajoMinimo, activo, page, pageSize } = parseInput(listProductsSchema, query);
-  if (activo !== "true") requireAdmin(user);
+  if (activo !== "true") exigirAdmin(user);
 
   const filters: SQL[] = [];
   if (q) filters.push(or(like(productos.codigo, `%${q}%`), like(productos.descripcion, `%${q}%`))!);
@@ -106,9 +106,9 @@ export async function listProducts(user: AuthUser, query: unknown): Promise<Pagi
  * Si llega `stockInicial`, se carga como un movimiento de ingreso con motivo
  * "Stock inicial", en la MISMA transacción que el alta (regla 2).
  */
-export async function createProduct(user: AuthUser, input: unknown): Promise<PublicProduct> {
+export async function crearProducto(user: AuthUser, input: unknown): Promise<PublicProduct> {
   const data = parseInput(createProductSchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   await findActiveCategory(data.categoriaId);
   const existing = await db.query.productos.findFirst({ where: eq(productos.codigo, data.codigo) });
@@ -138,7 +138,7 @@ export async function createProduct(user: AuthUser, input: unknown): Promise<Pub
     return created.id;
   });
 
-  return getProduct(user, productId);
+  return obtenerProducto(user, productId);
 }
 
 /**
@@ -146,10 +146,10 @@ export async function createProduct(user: AuthUser, input: unknown): Promise<Pub
  * `activo: false` es la baja lógica: deja de ofrecerse en ventas pero conserva su historial.
  * Cambiar el precio no toca las facturas ya emitidas (regla 3: guardan su propio precio).
  */
-export async function updateProduct(user: AuthUser, id: unknown, input: unknown): Promise<PublicProduct> {
+export async function actualizarProducto(user: AuthUser, id: unknown, input: unknown): Promise<PublicProduct> {
   const productId = parseInput(idParam, id);
   const changes = parseInput(updateProductSchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   const product = await db.query.productos.findFirst({ where: eq(productos.id, productId) });
   if (!product) throw notFound("El producto");
@@ -163,5 +163,5 @@ export async function updateProduct(user: AuthUser, id: unknown, input: unknown)
   }
 
   await db.update(productos).set(changes).where(eq(productos.id, productId));
-  return getProduct(user, productId);
+  return obtenerProducto(user, productId);
 }

@@ -8,14 +8,14 @@ import { eq, sql } from "drizzle-orm";
 import { db, writeTransaction } from "@/db/conexion";
 import { facturas, movimientosStock, productos } from "@/db/esquema";
 import { ApiError } from "@/lib/errores";
-import { createCategory } from "@/servicios/categorias";
-import { balanceOf, createCustomer, getCustomer, updateCustomer } from "@/servicios/clientes";
-import { cancelInvoice, createInvoice } from "@/servicios/facturas";
-import { registerPayment } from "@/servicios/pagos";
+import { crearCategoria } from "@/servicios/categorias";
+import { saldoDe, crearCliente, obtenerCliente, actualizarCliente } from "@/servicios/clientes";
+import { anularFactura, crearFactura } from "@/servicios/facturas";
+import { registrarPago } from "@/servicios/pagos";
 import type { AuthUser } from "@/servicios/permisos";
-import { createProduct, getProduct } from "@/servicios/productos";
-import { registerMovement } from "@/servicios/stock";
-import { createUser, insertUser } from "@/servicios/usuarios";
+import { crearProducto, obtenerProducto } from "@/servicios/productos";
+import { registrarMovimiento } from "@/servicios/stock";
+import { crearUsuario, insertarUsuario } from "@/servicios/usuarios";
 
 let admin: AuthUser;
 let vendedor: AuthUser;
@@ -33,7 +33,7 @@ async function expectApiError(promise: Promise<unknown>, status: number, code: s
 }
 
 async function newProduct(codigo: string, stockInicial: number, precio = 100000) {
-  return createProduct(admin, { codigo, descripcion: `Producto ${codigo}`, categoriaId: categoryId, precio, stockMinimo: 0, stockInicial });
+  return crearProducto(admin, { codigo, descripcion: `Producto ${codigo}`, categoriaId: categoryId, precio, stockMinimo: 0, stockInicial });
 }
 
 const countInvoices = async () => db.$count(facturas);
@@ -46,22 +46,22 @@ const movementSum = async (productId: number) => {
 };
 
 beforeAll(async () => {
-  admin = await insertUser({ nombre: "Admin Test", email: "admin@test.test", rol: "admin", password: "admin1234" });
-  vendedor = await createUser(admin, { nombre: "Vendedor Test", email: "vend@test.test", rol: "vendedor", password: "vend12345" });
-  categoryId = (await createCategory(admin, { nombre: "General" })).id;
+  admin = await insertarUsuario({ nombre: "Admin Test", email: "admin@test.test", rol: "admin", password: "admin1234" });
+  vendedor = await crearUsuario(admin, { nombre: "Vendedor Test", email: "vend@test.test", rol: "vendedor", password: "vend12345" });
+  categoryId = (await crearCategoria(admin, { nombre: "General" })).id;
 });
 
 describe("permisos (§10.8 punto 2)", () => {
   it("un vendedor no puede crear productos: 403", async () => {
     await expectApiError(
-      createProduct(vendedor, { codigo: "X-1", descripcion: "X", categoriaId: categoryId, precio: 100, stockMinimo: 0 }),
+      crearProducto(vendedor, { codigo: "X-1", descripcion: "X", categoriaId: categoryId, precio: 100, stockMinimo: 0 }),
       403,
       "SIN_PERMISO",
     );
   });
 
   it("un vendedor no puede anular facturas: 403", async () => {
-    await expectApiError(cancelInvoice(vendedor, 1, { motivo: "x" }), 403, "SIN_PERMISO");
+    await expectApiError(anularFactura(vendedor, 1, { motivo: "x" }), 403, "SIN_PERMISO");
   });
 });
 
@@ -69,11 +69,11 @@ describe("stock (reglas 1 y 2)", () => {
   it("un egreso que deja la existencia en negativo da 409 y no cambia nada", async () => {
     const product = await newProduct("ST-1", 3);
     await expectApiError(
-      registerMovement(admin, product.id, { tipo: "egreso", cantidad: 5, motivo: "Rotura" }),
+      registrarMovimiento(admin, product.id, { tipo: "egreso", cantidad: 5, motivo: "Rotura" }),
       409,
       "STOCK_INSUFICIENTE",
     );
-    expect((await getProduct(admin, product.id)).existencia).toBe(3);
+    expect((await obtenerProducto(admin, product.id)).existencia).toBe(3);
     expect(await movementSum(product.id)).toBe(3);
   });
 });
@@ -82,7 +82,7 @@ describe("facturas", () => {
   it("dos ventas simultáneas de la última unidad terminan con UNA factura (§10.8 punto 4)", async () => {
     const product = await newProduct("ULT-1", 1);
     const before = await countInvoices();
-    const sale = () => createInvoice(vendedor, { clienteId: null, items: [{ productoId: product.id, cantidad: 1 }], pago: { forma: "contado" } });
+    const sale = () => crearFactura(vendedor, { clienteId: null, items: [{ productoId: product.id, cantidad: 1 }], pago: { forma: "contado" } });
 
     const results = await Promise.allSettled([sale(), sale()]);
 
@@ -90,13 +90,13 @@ describe("facturas", () => {
     const rejected = results.find((r) => r.status === "rejected") as PromiseRejectedResult;
     expect((rejected.reason as ApiError).code).toBe("STOCK_INSUFICIENTE");
     expect(await countInvoices()).toBe(before + 1);
-    expect((await getProduct(admin, product.id)).existencia).toBe(0);
+    expect((await obtenerProducto(admin, product.id)).existencia).toBe(0);
     expect(await movementSum(product.id)).toBe(0);
   });
 
   it("una venta que supera el límite de crédito no graba NADA (§10.8 punto 3)", async () => {
     const product = await newProduct("LIM-1", 10, 1000000); // $ 10.000 cada uno
-    const customer = await createCustomer(vendedor, {
+    const customer = await crearCliente(vendedor, {
       tipoDoc: "DNI",
       nroDoc: "30111222",
       nombre: "Cliente Límite",
@@ -106,13 +106,13 @@ describe("facturas", () => {
     const before = await countInvoices();
 
     await expectApiError(
-      createInvoice(vendedor, { clienteId: customer.id, items: [{ productoId: product.id, cantidad: 2 }], pago: { forma: "cuenta_corriente" } }),
+      crearFactura(vendedor, { clienteId: customer.id, items: [{ productoId: product.id, cantidad: 2 }], pago: { forma: "cuenta_corriente" } }),
       422,
       "LIMITE_CREDITO_EXCEDIDO",
     );
     expect(await countInvoices()).toBe(before);
-    expect((await getProduct(admin, product.id)).existencia).toBe(10);
-    expect(await balanceOf(customer.id)).toBe(0);
+    expect((await obtenerProducto(admin, product.id)).existencia).toBe(10);
+    expect(await saldoDe(customer.id)).toBe(0);
   });
 
   it("si algo falla dentro de la transacción, se deshace lo ya escrito", async () => {
@@ -129,7 +129,7 @@ describe("facturas", () => {
   it("consumidor final no compra en cuenta corriente (regla 6)", async () => {
     const product = await newProduct("CF-1", 5);
     await expectApiError(
-      createInvoice(vendedor, { clienteId: null, items: [{ productoId: product.id, cantidad: 1 }], pago: { forma: "cuenta_corriente" } }),
+      crearFactura(vendedor, { clienteId: null, items: [{ productoId: product.id, cantidad: 1 }], pago: { forma: "cuenta_corriente" } }),
       422,
       "CUENTA_CORRIENTE_NO_HABILITADA",
     );
@@ -137,7 +137,7 @@ describe("facturas", () => {
 
   it("el precio queda congelado en la factura (regla 3)", async () => {
     const product = await newProduct("PR-1", 5, 200000);
-    const invoice = await createInvoice(vendedor, { clienteId: null, items: [{ productoId: product.id, cantidad: 2 }], pago: { forma: "contado" } });
+    const invoice = await crearFactura(vendedor, { clienteId: null, items: [{ productoId: product.id, cantidad: 2 }], pago: { forma: "contado" } });
     await db.update(productos).set({ precio: 999999 }).where(eq(productos.id, product.id));
     const [row] = await db.select().from(facturas).where(eq(facturas.id, invoice.id));
     expect(invoice.total).toBe(400000);
@@ -146,39 +146,39 @@ describe("facturas", () => {
 
   it("la anulación devuelve el stock, acredita la cuenta y no se puede repetir (RF-V9)", async () => {
     const product = await newProduct("AN-1", 5, 100000);
-    const customer = await createCustomer(vendedor, { tipoDoc: "DNI", nroDoc: "30999888", nombre: "Cliente Anulación", cuentaCorriente: true });
-    const invoice = await createInvoice(vendedor, {
+    const customer = await crearCliente(vendedor, { tipoDoc: "DNI", nroDoc: "30999888", nombre: "Cliente Anulación", cuentaCorriente: true });
+    const invoice = await crearFactura(vendedor, {
       clienteId: customer.id,
       items: [{ productoId: product.id, cantidad: 3 }],
       pago: { forma: "cuenta_corriente" },
     });
-    expect(await balanceOf(customer.id)).toBe(300000);
+    expect(await saldoDe(customer.id)).toBe(300000);
 
-    const cancelled = await cancelInvoice(admin, invoice.id, { motivo: "Error de carga" });
+    const cancelled = await anularFactura(admin, invoice.id, { motivo: "Error de carga" });
     expect(cancelled.estado).toBe("anulada");
-    expect((await getProduct(admin, product.id)).existencia).toBe(5);
+    expect((await obtenerProducto(admin, product.id)).existencia).toBe(5);
     expect(await movementSum(product.id)).toBe(5);
-    expect(await balanceOf(customer.id)).toBe(0);
-    await expectApiError(cancelInvoice(admin, invoice.id, { motivo: "otra vez" }), 409, "FACTURA_ANULADA");
+    expect(await saldoDe(customer.id)).toBe(0);
+    await expectApiError(anularFactura(admin, invoice.id, { motivo: "otra vez" }), 409, "FACTURA_ANULADA");
   });
 });
 
 describe("pagos (regla 8)", () => {
   it("un pago no puede superar la deuda; uno menor la baja y genera recibo", async () => {
     const product = await newProduct("PA-1", 5, 100000);
-    const customer = await createCustomer(vendedor, { tipoDoc: "DNI", nroDoc: "31555444", nombre: "Cliente Pago", cuentaCorriente: true });
-    await createInvoice(vendedor, { clienteId: customer.id, items: [{ productoId: product.id, cantidad: 2 }], pago: { forma: "cuenta_corriente" } });
+    const customer = await crearCliente(vendedor, { tipoDoc: "DNI", nroDoc: "31555444", nombre: "Cliente Pago", cuentaCorriente: true });
+    await crearFactura(vendedor, { clienteId: customer.id, items: [{ productoId: product.id, cantidad: 2 }], pago: { forma: "cuenta_corriente" } });
 
-    await expectApiError(registerPayment(vendedor, customer.id, { importe: 300000, medio: "efectivo" }), 422, "PAGO_SUPERA_DEUDA");
-    const receipt = await registerPayment(vendedor, customer.id, { importe: 50000, medio: "transferencia" });
+    await expectApiError(registrarPago(vendedor, customer.id, { importe: 300000, medio: "efectivo" }), 422, "PAGO_SUPERA_DEUDA");
+    const receipt = await registrarPago(vendedor, customer.id, { importe: 50000, medio: "transferencia" });
     expect(receipt.numeroRecibo).toMatch(/^R 0001-\d{8}$/);
-    expect(await balanceOf(customer.id)).toBe(150000);
+    expect(await saldoDe(customer.id)).toBe(150000);
   });
 });
 
 describe("clientes", () => {
   it("dar de baja a un cliente no le borra el email, el domicilio ni el teléfono", async () => {
-    const customer = await createCustomer(vendedor, {
+    const customer = await crearCliente(vendedor, {
       tipoDoc: "DNI",
       nroDoc: "32777666",
       nombre: "Cliente Contacto",
@@ -186,8 +186,8 @@ describe("clientes", () => {
       telefono: "381 455-2210",
       email: "contacto@correo.test",
     });
-    await updateCustomer(vendedor, customer.id, { activo: false });
-    const after = await getCustomer(vendedor, customer.id);
+    await actualizarCliente(vendedor, customer.id, { activo: false });
+    const after = await obtenerCliente(vendedor, customer.id);
     expect(after.activo).toBe(false);
     expect(after.email).toBe("contacto@correo.test");
     expect(after.domicilio).toBe("Las Heras 455");

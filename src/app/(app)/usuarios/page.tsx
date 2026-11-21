@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { UserActions } from "@/components/usuarios/acciones-usuario";
 import { UserFormDialog } from "@/components/usuarios/dialogo-usuario";
 import { requirePageUser } from "@/lib/sesion";
-import { listUsers } from "@/servicios/usuarios";
+import { listarUsuarios } from "@/servicios/usuarios";
 
 export const metadata: Metadata = { title: "Usuarios" };
 
@@ -23,11 +23,11 @@ export const metadata: Metadata = { title: "Usuarios" };
  */
 export default async function UsersPage({ searchParams }: PageProps<"/usuarios">) {
   const user = await requirePageUser();
-  // Solo ayuda visual: listUsers() igual lanzaría 403 para un vendedor.
+  // Solo ayuda visual: listarUsuarios() igual lanzaría 403 para un vendedor.
   if (user.rol !== "admin") return <ForbiddenState />;
 
   const params = (await searchParams) as Record<string, string | undefined>;
-  const result = await listUsers(user, params);
+  const result = await listarUsuarios(user, params);
 
   return (
     <>

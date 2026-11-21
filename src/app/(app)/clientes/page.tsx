@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDocument } from "@/lib/formato";
 import { requirePageUser } from "@/lib/sesion";
-import { listCustomers } from "@/servicios/clientes";
+import { listarClientes } from "@/servicios/clientes";
 
 export const metadata: Metadata = { title: "Clientes" };
 
@@ -25,7 +25,7 @@ export const metadata: Metadata = { title: "Clientes" };
 export default async function CustomersPage({ searchParams }: PageProps<"/clientes">) {
   const user = await requirePageUser();
   const params = (await searchParams) as Record<string, string | undefined>;
-  const result = await listCustomers(user, params);
+  const result = await listarClientes(user, params);
 
   return (
     <>

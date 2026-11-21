@@ -13,7 +13,7 @@ import { formatDateTime, formatDocument, formatMoney } from "@/lib/formato";
 import { formaPagoLabels, tarjetaTipoLabels } from "@/lib/etiquetas";
 import { requirePageUser } from "@/lib/sesion";
 import { STORE } from "@/lib/comercio";
-import { getInvoice } from "@/servicios/facturas";
+import { obtenerFactura } from "@/servicios/facturas";
 
 export const metadata: Metadata = { title: "Factura" };
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Factura" };
 export default async function InvoicePage({ params }: PageProps<"/ventas/[id]">) {
   const user = await requirePageUser();
   const { id } = await params;
-  const invoice = await getInvoice(user, id);
+  const invoice = await obtenerFactura(user, id);
   const { pago } = invoice;
 
   return (

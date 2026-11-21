@@ -9,7 +9,7 @@ import { ApiError, notFound } from "@/lib/errores";
 import { parseInput } from "@/lib/validacion";
 import { idParam } from "@/esquemas/comunes";
 import { createCategorySchema, listCategoriesSchema, updateCategorySchema } from "@/esquemas/productos";
-import { requireAdmin, type AuthUser } from "./permisos";
+import { exigirAdmin, type AuthUser } from "./permisos";
 
 export type PublicCategory = { id: number; nombre: string; activa: boolean; productosActivos: number };
 
@@ -23,7 +23,7 @@ const countActiveProducts = (categoryId: number) =>
   db.$count(productos, and(eq(productos.categoriaId, categoryId), eq(productos.activo, true)));
 
 /** GET /api/categorias: las activas, sin paginar (§11.4). `todas=true` suma las inactivas. */
-export async function listCategories(user: AuthUser, query: unknown = {}): Promise<PublicCategory[]> {
+export async function listarCategorias(user: AuthUser, query: unknown = {}): Promise<PublicCategory[]> {
   const { todas } = parseInput(listCategoriesSchema, query);
   const rows = await db
     .select()
@@ -36,9 +36,9 @@ export async function listCategories(user: AuthUser, query: unknown = {}): Promi
 }
 
 /** POST /api/categorias (RF-P7). Solo admin. */
-export async function createCategory(user: AuthUser, input: unknown): Promise<PublicCategory> {
+export async function crearCategoria(user: AuthUser, input: unknown): Promise<PublicCategory> {
   const { nombre } = parseInput(createCategorySchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   const existing = await db.query.categorias.findFirst({ where: eq(categorias.nombre, nombre) });
   if (existing) throw duplicatedName();
@@ -51,10 +51,10 @@ export async function createCategory(user: AuthUser, input: unknown): Promise<Pu
  * PATCH /api/categorias/{id} (RF-P7). Solo admin.
  * No se puede desactivar una categoría que todavía tiene productos activos: 409 CATEGORIA_EN_USO.
  */
-export async function updateCategory(user: AuthUser, id: unknown, input: unknown): Promise<PublicCategory> {
+export async function actualizarCategoria(user: AuthUser, id: unknown, input: unknown): Promise<PublicCategory> {
   const categoryId = parseInput(idParam, id);
   const changes = parseInput(updateCategorySchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   const category = await db.query.categorias.findFirst({ where: eq(categorias.id, categoryId) });
   if (!category) throw notFound("La categoría");

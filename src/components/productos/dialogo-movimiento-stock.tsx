@@ -5,7 +5,7 @@
  * El egreso no puede dejar la existencia en negativo: lo controla moverStock() en el servidor.
  */
 import { useState, type ReactNode } from "react";
-import { registerMovementAction } from "@/acciones/productos";
+import { registrarMovimientoAccion } from "@/acciones/productos";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { Stack, Text } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,7 @@ function MovementForm({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await form.submit((values) => registerMovementAction(product.id, values), {
+    await form.submit((values) => registrarMovimientoAccion(product.id, values), {
       success: tipo === "ingreso" ? "Ingreso registrado." : "Egreso registrado.",
       onSuccess: onDone,
     });

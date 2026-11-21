@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDocument, formatMoney } from "@/lib/formato";
 import { requirePageUser } from "@/lib/sesion";
-import { listCustomers } from "@/servicios/clientes";
+import { listarClientes } from "@/servicios/clientes";
 
 export const metadata: Metadata = { title: "Saldos" };
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = { title: "Saldos" };
 export default async function BalancesPage({ searchParams }: PageProps<"/clientes/saldos">) {
   const user = await requirePageUser();
   const params = (await searchParams) as Record<string, string | undefined>;
-  const result = await listCustomers(user, { ...params, conDeuda: "true", orden: "saldo", activo: "todos" });
+  const result = await listarClientes(user, { ...params, conDeuda: "true", orden: "saldo", activo: "todos" });
 
   return (
     <>

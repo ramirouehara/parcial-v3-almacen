@@ -11,8 +11,8 @@ import { ApiError, notFound } from "@/lib/errores";
 import { parseInput } from "@/lib/validacion";
 import { idParam, type Paginated } from "@/esquemas/comunes";
 import { createUserSchema, listUsersSchema, updateUserSchema } from "@/esquemas/usuarios";
-import { hashPassword } from "./autenticacion";
-import { requireAdmin, type AuthUser } from "./permisos";
+import { hashearContrasena } from "./autenticacion";
+import { exigirAdmin, type AuthUser } from "./permisos";
 
 /** Lo que devuelve la API de un usuario: todo, menos el hash de la contraseña. */
 export type PublicUser = Omit<Usuario, "passwordHash" | "creadoEn"> & { creadoEn: string };
@@ -38,9 +38,9 @@ async function findUser(id: number): Promise<Usuario> {
 }
 
 /** GET /api/usuarios: busca por nombre o email, filtra por activo, con páginas. */
-export async function listUsers(user: AuthUser, query: unknown): Promise<Paginated<PublicUser>> {
+export async function listarUsuarios(user: AuthUser, query: unknown): Promise<Paginated<PublicUser>> {
   const { q, activo, page, pageSize } = parseInput(listUsersSchema, query);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   const filters: SQL[] = [];
   if (q) filters.push(or(like(usuarios.nombre, `%${q}%`), like(usuarios.email, `%${q}%`))!);
@@ -61,10 +61,10 @@ export async function listUsers(user: AuthUser, query: unknown): Promise<Paginat
 
 /**
  * Crea la fila del usuario (email único, contraseña hasheada).
- * Acá NO se comprueba el permiso: lo hace createUser(), y el seed usa esta
+ * Acá NO se comprueba el permiso: lo hace crearUsuario(), y el seed usa esta
  * función directo para crear el PRIMER admin (RF-U3), cuando todavía no hay ninguno.
  */
-export async function insertUser(input: unknown): Promise<PublicUser> {
+export async function insertarUsuario(input: unknown): Promise<PublicUser> {
   const data = parseInput(createUserSchema, input);
   const existing = await db.query.usuarios.findFirst({ where: eq(usuarios.email, data.email) });
   if (existing) throw duplicatedEmail();
@@ -75,24 +75,24 @@ export async function insertUser(input: unknown): Promise<PublicUser> {
       nombre: data.nombre,
       email: data.email,
       rol: data.rol,
-      passwordHash: await hashPassword(data.password),
+      passwordHash: await hashearContrasena(data.password),
     })
     .returning();
   return toPublicUser(created);
 }
 
 /** POST /api/usuarios (RF-U4). */
-export async function createUser(user: AuthUser, input: unknown): Promise<PublicUser> {
+export async function crearUsuario(user: AuthUser, input: unknown): Promise<PublicUser> {
   parseInput(createUserSchema, input);
-  requireAdmin(user);
-  return insertUser(input);
+  exigirAdmin(user);
+  return insertarUsuario(input);
 }
 
 /** PATCH /api/usuarios/{id} (RF-U4): editar, cambiar el rol, activar o desactivar. */
-export async function updateUser(user: AuthUser, id: unknown, input: unknown): Promise<PublicUser> {
+export async function actualizarUsuario(user: AuthUser, id: unknown, input: unknown): Promise<PublicUser> {
   const userId = parseInput(idParam, id);
   const changes = parseInput(updateUserSchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   const target = await findUser(userId);
 
@@ -120,15 +120,15 @@ export async function updateUser(user: AuthUser, id: unknown, input: unknown): P
  * Genera una contraseña temporal y la devuelve UNA sola vez: solo se guarda su hash,
  * así nadie la puede volver a leer después.
  */
-export async function resetPassword(user: AuthUser, id: unknown): Promise<{ passwordTemporal: string }> {
+export async function restablecerContrasena(user: AuthUser, id: unknown): Promise<{ passwordTemporal: string }> {
   const userId = parseInput(idParam, id);
-  requireAdmin(user);
+  exigirAdmin(user);
   await findUser(userId);
 
   const passwordTemporal = randomBytes(6).toString("base64url"); // 8 caracteres al azar
   await db
     .update(usuarios)
-    .set({ passwordHash: await hashPassword(passwordTemporal) })
+    .set({ passwordHash: await hashearContrasena(passwordTemporal) })
     .where(eq(usuarios.id, userId));
   return { passwordTemporal };
 }

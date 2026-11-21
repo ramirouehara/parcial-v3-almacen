@@ -5,6 +5,6 @@
  * §10.6); la anulación usa esta acción. Las dos llaman al mismo servicio.
  */
 import { action } from "@/lib/accion";
-import { cancelInvoice } from "@/servicios/facturas";
+import { anularFactura } from "@/servicios/facturas";
 
-export const cancelInvoiceAction = action((user, id: number, input: unknown) => cancelInvoice(user, id, input));
+export const anularFacturaAccion = action((user, id: number, input: unknown) => anularFactura(user, id, input));

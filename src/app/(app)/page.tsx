@@ -10,15 +10,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatMoney } from "@/lib/formato";
 import { requirePageUser } from "@/lib/sesion";
-import { getDashboard } from "@/servicios/tablero";
-import { listProducts } from "@/servicios/productos";
+import { obtenerTablero } from "@/servicios/tablero";
+import { listarProductos } from "@/servicios/productos";
 
 /** Inicio (/): el tablero con indicadores (RF-T1), gráficos (RF-T2) y más vendidos (RF-T3). Ambos roles. */
 export default async function HomePage() {
   const user = await requirePageUser();
   const [d, restock] = await Promise.all([
-    getDashboard(user),
-    listProducts(user, { bajoMinimo: "true", pageSize: "5" }),
+    obtenerTablero(user),
+    listarProductos(user, { bajoMinimo: "true", pageSize: "5" }),
   ]);
 
   return (

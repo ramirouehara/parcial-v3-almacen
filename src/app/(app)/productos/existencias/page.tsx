@@ -8,7 +8,7 @@ import { Row, Stack } from "@/components/maquetacion/primitivas";
 import { MovementsTable } from "@/components/productos/tabla-movimientos";
 import { ProductsTabs } from "@/components/productos/pestanas-productos";
 import { requirePageUser } from "@/lib/sesion";
-import { listMovements } from "@/servicios/stock";
+import { listarMovimientos } from "@/servicios/stock";
 
 export const metadata: Metadata = { title: "Existencias" };
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "Existencias" };
 export default async function StockPage({ searchParams }: PageProps<"/productos/existencias">) {
   const user = await requirePageUser();
   const params = (await searchParams) as Record<string, string | undefined>;
-  const result = await listMovements(user, params);
+  const result = await listarMovimientos(user, params);
 
   return (
     <>

@@ -10,6 +10,6 @@ import type { Rol } from "@/db/esquema";
 export type AuthUser = { id: number; nombre: string; email: string; rol: Rol };
 
 /** Lanza 403 SIN_PERMISO salvo que el usuario sea admin (tabla del §3). */
-export function requireAdmin(user: AuthUser): void {
+export function exigirAdmin(user: AuthUser): void {
   if (user.rol !== "admin") throw forbidden();
 }

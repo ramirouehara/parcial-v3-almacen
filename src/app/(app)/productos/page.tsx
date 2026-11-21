@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatMoney } from "@/lib/formato";
 import { requirePageUser } from "@/lib/sesion";
-import { listCategories } from "@/servicios/categorias";
-import { listProducts } from "@/servicios/productos";
+import { listarCategorias } from "@/servicios/categorias";
+import { listarProductos } from "@/servicios/productos";
 
 export const metadata: Metadata = { title: "Productos" };
 
@@ -32,7 +32,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/product
   // El filtro de estado es solo para el admin; para el vendedor siempre son los activos.
   const query = { ...params, activo: isAdmin ? (params.activo ?? "true") : "true" };
 
-  const [result, categories] = await Promise.all([listProducts(user, query), listCategories(user)]);
+  const [result, categories] = await Promise.all([listarProductos(user, query), listarCategorias(user)]);
 
   return (
     <>

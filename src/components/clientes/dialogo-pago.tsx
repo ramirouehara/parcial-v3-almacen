@@ -6,7 +6,7 @@
  */
 import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { registerPaymentAction } from "@/acciones/clientes";
+import { registrarPagoAccion } from "@/acciones/clientes";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { MoneyInput } from "@/components/comunes/campo-importe";
 import { Stack, Text } from "@/components/maquetacion/primitivas";
@@ -62,7 +62,7 @@ function PaymentForm({ customer }: { customer: { id: number; saldo: number } }) 
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await form.submit((values) => registerPaymentAction(customer.id, values), {
+    await form.submit((values) => registrarPagoAccion(customer.id, values), {
       success: "Pago registrado.",
       onSuccess: (receipt) => router.push(`/clientes/recibos/${receipt.id}`),
     });

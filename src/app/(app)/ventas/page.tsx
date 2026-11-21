@@ -15,7 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDateTime, formatMoney } from "@/lib/formato";
 import { formaPagoLabels } from "@/lib/etiquetas";
 import { requirePageUser } from "@/lib/sesion";
-import { listInvoices, listSellers } from "@/servicios/facturas";
+import { listarFacturas, listarVendedores } from "@/servicios/facturas";
 
 export const metadata: Metadata = { title: "Ventas" };
 
@@ -23,7 +23,7 @@ export const metadata: Metadata = { title: "Ventas" };
 export default async function InvoicesPage({ searchParams }: PageProps<"/ventas">) {
   const user = await requirePageUser();
   const params = (await searchParams) as Record<string, string | undefined>;
-  const [result, sellers] = await Promise.all([listInvoices(user, params), listSellers()]);
+  const [result, sellers] = await Promise.all([listarFacturas(user, params), listarVendedores()]);
 
   return (
     <>

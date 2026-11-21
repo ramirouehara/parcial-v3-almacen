@@ -11,7 +11,7 @@ import { PUNTO_VENTA } from "@/lib/comercio";
 import { parseInput } from "@/lib/validacion";
 import { idParam } from "@/esquemas/comunes";
 import { paymentSchema } from "@/esquemas/clientes";
-import { balanceOf } from "./clientes";
+import { saldoDe } from "./clientes";
 import type { AuthUser } from "./permisos";
 
 /** El recibo, tal como lo devuelve la API (§11.5). */
@@ -33,7 +33,7 @@ export type Receipt = {
  * - 422 PAGO_SUPERA_DEUDA si el importe es mayor que el saldo (regla 8: no hay saldos a favor).
  * - El número de recibo es el siguiente al último, asignado DENTRO de la transacción (regla 4).
  */
-export async function registerPayment(user: AuthUser, customerId: unknown, input: unknown): Promise<Receipt> {
+export async function registrarPago(user: AuthUser, customerId: unknown, input: unknown): Promise<Receipt> {
   const clienteId = parseInput(idParam, customerId);
   const data = parseInput(paymentSchema, input);
 
@@ -45,7 +45,7 @@ export async function registerPayment(user: AuthUser, customerId: unknown, input
     }
 
     // El saldo se calcula adentro de la transacción, así nadie lo cambia en el medio.
-    const saldo = await balanceOf(clienteId, tx);
+    const saldo = await saldoDe(clienteId, tx);
     if (data.importe > saldo) {
       throw new ApiError(422, "PAGO_SUPERA_DEUDA", "El pago no puede superar la deuda del cliente.", [
         { campo: "importe", mensaje: `La deuda es de ${formatMoney(saldo)}: el pago no puede ser mayor.` },
@@ -78,11 +78,11 @@ export async function registerPayment(user: AuthUser, customerId: unknown, input
     return payment.id;
   });
 
-  return getPayment(user, paymentId);
+  return obtenerPago(user, paymentId);
 }
 
 /** GET /api/pagos/{id}: el mismo recibo, para reimprimirlo. */
-export async function getPayment(user: AuthUser, id: unknown): Promise<Receipt> {
+export async function obtenerPago(user: AuthUser, id: unknown): Promise<Receipt> {
   const paymentId = parseInput(idParam, id);
   const [row] = await db
     .select({
@@ -105,6 +105,6 @@ export async function getPayment(user: AuthUser, id: unknown): Promise<Receipt> 
     medio: row.p.medio,
     observacion: row.p.observacion,
     usuario: row.usuario,
-    saldoCliente: await balanceOf(row.cliente.id),
+    saldoCliente: await saldoDe(row.cliente.id),
   };
 }

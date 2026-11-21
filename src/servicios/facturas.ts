@@ -14,8 +14,8 @@ import { PUNTO_VENTA } from "@/lib/comercio";
 import { parseInput } from "@/lib/validacion";
 import { idParam, type Paginated } from "@/esquemas/comunes";
 import { cancelInvoiceSchema, createInvoiceSchema, listInvoicesSchema } from "@/esquemas/facturas";
-import { balanceOf } from "./clientes";
-import { requireAdmin, type AuthUser } from "./permisos";
+import { saldoDe } from "./clientes";
+import { exigirAdmin, type AuthUser } from "./permisos";
 import { moverStock } from "./stock";
 
 type FormaPago = "contado" | "tarjeta" | "cuenta_corriente";
@@ -62,7 +62,7 @@ async function nextInvoiceNumber(executor: Tx | typeof db): Promise<number> {
 }
 
 /** GET /api/facturas/proximo-numero: solo informativo; el número real se asigna al confirmar. */
-export async function previewNextNumber(): Promise<{ numeroFormateado: string }> {
+export async function verProximoNumero(): Promise<{ numeroFormateado: string }> {
   return { numeroFormateado: formatInvoiceNumber(PUNTO_VENTA, await nextInvoiceNumber(db)) };
 }
 
@@ -70,7 +70,7 @@ export async function previewNextNumber(): Promise<{ numeroFormateado: string }>
  * POST /api/facturas (RF-V1 a RF-V6). Los pasos del §11.6, en orden, dentro de UNA transacción.
  * Si cualquier paso lanza un error, la transacción se deshace entera: no queda nada a medias.
  */
-export async function createInvoice(user: AuthUser, input: unknown): Promise<PublicInvoice> {
+export async function crearFactura(user: AuthUser, input: unknown): Promise<PublicInvoice> {
   const data = parseInput(createInvoiceSchema, input);
 
   const invoiceId = await writeTransaction(async (tx) => {
@@ -133,7 +133,7 @@ export async function createInvoice(user: AuthUser, input: unknown): Promise<Pub
       }
     }
     if (data.pago.forma === "cuenta_corriente" && customer && customer.limiteCredito !== null) {
-      const saldoActual = await balanceOf(customer.id, tx);
+      const saldoActual = await saldoDe(customer.id, tx);
       if (saldoActual + total > customer.limiteCredito) {
         throw new ApiError(422, "LIMITE_CREDITO_EXCEDIDO", "La venta supera el límite de crédito del cliente.", {
           saldoActual,
@@ -195,11 +195,11 @@ export async function createInvoice(user: AuthUser, input: unknown): Promise<Pub
     return invoice.id;
   });
 
-  return getInvoice(user, invoiceId);
+  return obtenerFactura(user, invoiceId);
 }
 
 /** GET /api/facturas/{id} (RF-V7): la factura completa, para el comprobante. */
-export async function getInvoice(user: AuthUser, id: unknown): Promise<PublicInvoice> {
+export async function obtenerFactura(user: AuthUser, id: unknown): Promise<PublicInvoice> {
   const invoiceId = parseInput(idParam, id);
   const [row] = await db
     .select({ f: facturas, vendedor: { id: usuarios.id, nombre: usuarios.nombre } })
@@ -245,7 +245,7 @@ export async function getInvoice(user: AuthUser, id: unknown): Promise<PublicInv
     total: f.total,
     pago,
   };
-  if (f.formaPago === "cuenta_corriente" && customer) invoice.saldoCliente = await balanceOf(customer.id);
+  if (f.formaPago === "cuenta_corriente" && customer) invoice.saldoCliente = await saldoDe(customer.id);
   if (f.estado === "anulada" && f.anuladaPorId && f.anuladaEn) {
     const by = await db.query.usuarios.findFirst({ where: eq(usuarios.id, f.anuladaPorId) });
     invoice.anulacion = {
@@ -262,7 +262,7 @@ export async function getInvoice(user: AuthUser, id: unknown): Promise<PublicInv
  * `q` busca por número ("1233" o "0001-00001233") o por nombre del cliente.
  * `totalEmitido` suma solo las emitidas (no las anuladas) que cumplen el filtro.
  */
-export async function listInvoices(
+export async function listarFacturas(
   user: AuthUser,
   query: unknown,
 ): Promise<Paginated<InvoiceListItem> & { totalEmitido: number }> {
@@ -324,7 +324,7 @@ export async function listInvoices(
 }
 
 /** Los vendedores que se pueden elegir en el filtro del listado (ambos roles). */
-export async function listSellers(): Promise<{ id: number; nombre: string }[]> {
+export async function listarVendedores(): Promise<{ id: number; nombre: string }[]> {
   return db.select({ id: usuarios.id, nombre: usuarios.nombre }).from(usuarios).orderBy(usuarios.nombre);
 }
 
@@ -334,10 +334,10 @@ export async function listSellers(): Promise<{ id: number; nombre: string }[]> {
  * con un movimiento de anulación y, si fue a cuenta corriente, acredita el total.
  * La factura nunca se borra: queda visible con estado "anulada".
  */
-export async function cancelInvoice(user: AuthUser, id: unknown, input: unknown): Promise<PublicInvoice> {
+export async function anularFactura(user: AuthUser, id: unknown, input: unknown): Promise<PublicInvoice> {
   const invoiceId = parseInput(idParam, id);
   const { motivo } = parseInput(cancelInvoiceSchema, input);
-  requireAdmin(user);
+  exigirAdmin(user);
 
   await writeTransaction(async (tx) => {
     const invoice = await tx.query.facturas.findFirst({ where: eq(facturas.id, invoiceId) });
@@ -375,5 +375,5 @@ export async function cancelInvoice(user: AuthUser, id: unknown, input: unknown)
     }
   });
 
-  return getInvoice(user, invoiceId);
+  return obtenerFactura(user, invoiceId);
 }

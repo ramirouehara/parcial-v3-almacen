@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDate, formatDateTime, formatDocument, formatMoney } from "@/lib/formato";
 import { formaPagoLabels } from "@/lib/etiquetas";
 import { requirePageUser } from "@/lib/sesion";
-import { getAccount, getCustomer } from "@/servicios/clientes";
+import { obtenerCuentaCorriente, obtenerCliente } from "@/servicios/clientes";
 
 export const metadata: Metadata = { title: "Cliente" };
 
@@ -25,7 +25,7 @@ export default async function CustomerPage({ params, searchParams }: PageProps<"
   const user = await requirePageUser();
   const { id } = await params;
   const query = (await searchParams) as Record<string, string | undefined>;
-  const [customer, account] = await Promise.all([getCustomer(user, id), getAccount(user, id, query)]);
+  const [customer, account] = await Promise.all([obtenerCliente(user, id), obtenerCuentaCorriente(user, id, query)]);
 
   return (
     <>

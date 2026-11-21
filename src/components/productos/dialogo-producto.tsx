@@ -6,7 +6,7 @@
  * como un movimiento de ingreso; después solo cambia con ingresos, egresos y ventas.
  */
 import { useState, type ReactNode } from "react";
-import { createProductAction, updateProductAction } from "@/acciones/productos";
+import { crearProductoAccion, actualizarProductoAccion } from "@/acciones/productos";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { MoneyInput } from "@/components/comunes/campo-importe";
 import { Grid, Stack } from "@/components/maquetacion/primitivas";
@@ -94,12 +94,12 @@ function ProductForm({
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (editing) {
-      await form.submit((values) => updateProductAction(product.id, values), {
+      await form.submit((values) => actualizarProductoAccion(product.id, values), {
         success: "Producto actualizado.",
         onSuccess: onDone,
       });
     } else {
-      await form.submit(createProductAction, { success: "Producto creado.", onSuccess: onDone });
+      await form.submit(crearProductoAccion, { success: "Producto creado.", onSuccess: onDone });
     }
   }
 

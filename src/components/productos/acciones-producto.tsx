@@ -3,7 +3,7 @@
 /** Botones de cada producto (solo admin): editar y dar de baja / reactivar (RF-P2, RF-P3). */
 import { toast } from "sonner";
 import { Pencil, Power } from "lucide-react";
-import { updateProductAction } from "@/acciones/productos";
+import { actualizarProductoAccion } from "@/acciones/productos";
 import { ConfirmAction } from "@/components/comunes/confirmar-accion";
 import { Row } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ export function ProductActions({
   categories: { id: number; nombre: string }[];
 }) {
   async function toggleActive() {
-    const result = await updateProductAction(product.id, { activo: !product.activo });
+    const result = await actualizarProductoAccion(product.id, { activo: !product.activo });
     if (!result.ok) {
       toast.error(result.error.message);
       return false;

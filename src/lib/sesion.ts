@@ -4,7 +4,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { resolveSessionUser } from "@/servicios/autenticacion";
+import { buscarUsuarioDeSesion } from "@/servicios/autenticacion";
 import type { AuthUser } from "@/servicios/permisos";
 import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS, signSession, verifySession } from "./token-sesion";
 
@@ -33,7 +33,7 @@ export async function endSession(): Promise<void> {
 export const getSessionUser = cache(async (): Promise<AuthUser | null> => {
   const cookieStore = await cookies();
   const userId = await verifySession(cookieStore.get(SESSION_COOKIE)?.value);
-  return resolveSessionUser(userId);
+  return buscarUsuarioDeSesion(userId);
 });
 
 /** Segunda barrera del §10.5: cada página comprueba que haya un usuario válido. */

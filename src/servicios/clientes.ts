@@ -44,15 +44,15 @@ export type PublicCustomer = {
  * Se escribe con los nombres completos ("clientes"."id"): dentro de una subconsulta,
  * un "id" suelto se confundiría con el id del movimiento.
  */
-export const balanceSql = sql<number>`coalesce((
+export const saldoSql = sql<number>`coalesce((
   select sum(case when mc.tipo = 'debito' then mc.importe else -mc.importe end)
   from movimientos_cuenta mc where mc.cliente_id = "clientes"."id"
 ), 0)`;
 
 /** El saldo de un cliente (regla 7). Recibe `tx` cuando se calcula dentro de una transacción. */
-export async function balanceOf(clienteId: number, executor: Tx | typeof db = db): Promise<number> {
+export async function saldoDe(clienteId: number, executor: Tx | typeof db = db): Promise<number> {
   const [row] = await executor
-    .select({ saldo: balanceSql })
+    .select({ saldo: saldoSql })
     .from(clientes)
     .where(eq(clientes.id, clienteId));
   return row ? Number(row.saldo) : 0;
@@ -88,7 +88,7 @@ async function findCustomer(id: number): Promise<Cliente> {
  * GET /api/clientes (RF-C1, RF-C6): búsqueda por nombre o documento, con el saldo de cada uno.
  * `conDeuda=true` deja solo los que deben y suma `totalAdeudado` (la pantalla de saldos).
  */
-export async function listCustomers(
+export async function listarClientes(
   user: AuthUser,
   query: unknown,
 ): Promise<Paginated<PublicCustomer> & { totalAdeudado?: number }> {
@@ -101,18 +101,18 @@ export async function listCustomers(
     filters.push(digits ? or(byName, like(clientes.nroDoc, `%${digits}%`))! : byName);
   }
   if (activo !== "todos") filters.push(eq(clientes.activo, activo === "true"));
-  if (conDeuda) filters.push(gt(balanceSql, 0));
+  if (conDeuda) filters.push(gt(saldoSql, 0));
   const where = and(...filters);
 
   const rows = await db
-    .select({ c: clientes, saldo: balanceSql })
+    .select({ c: clientes, saldo: saldoSql })
     .from(clientes)
     .where(where)
-    .orderBy(orden === "saldo" ? desc(balanceSql) : asc(clientes.nombre))
+    .orderBy(orden === "saldo" ? desc(saldoSql) : asc(clientes.nombre))
     .limit(pageSize)
     .offset((page - 1) * pageSize);
   const [{ total, totalAdeudado }] = await db
-    .select({ total: sql<number>`count(*)`, totalAdeudado: sql<number>`coalesce(sum(${balanceSql}), 0)` })
+    .select({ total: sql<number>`count(*)`, totalAdeudado: sql<number>`coalesce(sum(${saldoSql}), 0)` })
     .from(clientes)
     .where(where);
 
@@ -135,7 +135,7 @@ export type InvoiceSummary = {
 };
 
 /** GET /api/clientes/{id} (RF-C3): datos, saldo y las 6 últimas facturas. */
-export async function getCustomer(
+export async function obtenerCliente(
   user: AuthUser,
   id: unknown,
 ): Promise<PublicCustomer & { ultimasFacturas: InvoiceSummary[] }> {
@@ -149,7 +149,7 @@ export async function getCustomer(
     .limit(6);
 
   return {
-    ...toPublicCustomer(customer, await balanceOf(customerId)),
+    ...toPublicCustomer(customer, await saldoDe(customerId)),
     ultimasFacturas: invoices.map((f) => ({
       id: f.id,
       numero: formatInvoiceNumber(f.puntoVenta, f.numero),
@@ -162,7 +162,7 @@ export async function getCustomer(
 }
 
 /** POST /api/clientes (RF-C2). Ambos roles. Sin cuenta corriente no hay límite de crédito. */
-export async function createCustomer(user: AuthUser, input: unknown): Promise<PublicCustomer> {
+export async function crearCliente(user: AuthUser, input: unknown): Promise<PublicCustomer> {
   const data = parseInput(createCustomerSchema, input);
 
   const existing = await db.query.clientes.findFirst({ where: eq(clientes.nroDoc, data.nroDoc) });
@@ -180,7 +180,7 @@ export async function createCustomer(user: AuthUser, input: unknown): Promise<Pu
  * No se puede dar de baja ni quitarle la cuenta corriente a un cliente con saldo:
  * 422 SALDO_PENDIENTE (primero tiene que pagar).
  */
-export async function updateCustomer(user: AuthUser, id: unknown, input: unknown): Promise<PublicCustomer> {
+export async function actualizarCliente(user: AuthUser, id: unknown, input: unknown): Promise<PublicCustomer> {
   const customerId = parseInput(idParam, id);
   const changes = parseInput(updateCustomerSchema, input);
   const customer = await findCustomer(customerId);
@@ -197,7 +197,7 @@ export async function updateCustomer(user: AuthUser, id: unknown, input: unknown
     if (existing) throw duplicatedDocument();
   }
 
-  const saldo = await balanceOf(customerId);
+  const saldo = await saldoDe(customerId);
   if (saldo !== 0 && (changes.activo === false || changes.cuentaCorriente === false)) {
     throw new ApiError(
       422,
@@ -231,7 +231,7 @@ export type AccountMovement = {
  * GET /api/clientes/{id}/cuenta (RF-C4): movimientos en orden cronológico con el saldo
  * acumulado en cada renglón. Si `desde` corta el historial, `saldoAnterior` trae lo de antes.
  */
-export async function getAccount(user: AuthUser, id: unknown, query: unknown) {
+export async function obtenerCuentaCorriente(user: AuthUser, id: unknown, query: unknown) {
   const customerId = parseInput(idParam, id);
   const { desde, hasta } = parseInput(accountSchema, query);
   const customer = await findCustomer(customerId);

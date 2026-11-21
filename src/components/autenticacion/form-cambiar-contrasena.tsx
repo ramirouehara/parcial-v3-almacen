@@ -1,6 +1,6 @@
 "use client";
 
-import { changePasswordAction } from "@/acciones/autenticacion";
+import { cambiarContrasenaAccion } from "@/acciones/autenticacion";
 import { FormField } from "@/components/comunes/campo-formulario";
 import { Stack } from "@/components/maquetacion/primitivas";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ export function ChangePasswordForm() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await form.submit(changePasswordAction, {
+    await form.submit(cambiarContrasenaAccion, {
       success: "Contraseña actualizada.",
       onSuccess: () => form.setValues(empty),
     });

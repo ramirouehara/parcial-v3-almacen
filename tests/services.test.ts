@@ -9,7 +9,7 @@ import { db, writeTransaction } from "@/db/client";
 import { facturas, movimientosStock, productos } from "@/db/schema";
 import { ApiError } from "@/lib/errors";
 import { createCategory } from "@/services/categories";
-import { balanceOf, createCustomer } from "@/services/customers";
+import { balanceOf, createCustomer, getCustomer, updateCustomer } from "@/services/customers";
 import { cancelInvoice, createInvoice } from "@/services/invoices";
 import { registerPayment } from "@/services/payments";
 import type { AuthUser } from "@/services/permissions";
@@ -173,5 +173,24 @@ describe("pagos (regla 8)", () => {
     const receipt = await registerPayment(vendedor, customer.id, { importe: 50000, medio: "transferencia" });
     expect(receipt.numeroRecibo).toMatch(/^R 0001-\d{8}$/);
     expect(await balanceOf(customer.id)).toBe(150000);
+  });
+});
+
+describe("clientes", () => {
+  it("dar de baja a un cliente no le borra el email, el domicilio ni el teléfono", async () => {
+    const customer = await createCustomer(vendedor, {
+      tipoDoc: "DNI",
+      nroDoc: "32777666",
+      nombre: "Cliente Contacto",
+      domicilio: "Las Heras 455",
+      telefono: "381 455-2210",
+      email: "contacto@correo.test",
+    });
+    await updateCustomer(vendedor, customer.id, { activo: false });
+    const after = await getCustomer(vendedor, customer.id);
+    expect(after.activo).toBe(false);
+    expect(after.email).toBe("contacto@correo.test");
+    expect(after.domicilio).toBe("Las Heras 455");
+    expect(after.telefono).toBe("381 455-2210");
   });
 });

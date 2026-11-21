@@ -51,9 +51,9 @@ export const updateCustomerSchema = z.strictObject({
   tipoDoc: tipoDoc.optional(),
   nroDoc: nroDoc.optional(),
   nombre: customerFields.nombre.optional(),
-  domicilio: customerFields.domicilio,
-  telefono: customerFields.telefono,
-  email: customerFields.email,
+  domicilio: customerFields.domicilio.optional(), // .optional(): si no viene, no se toca (no se borra)
+  telefono: customerFields.telefono.optional(),
+  email: customerFields.email.optional(),
   cuentaCorriente: z.boolean().optional(),
   limiteCredito,
   activo: z.boolean().optional(),

@@ -44,7 +44,7 @@ export type PublicCustomer = {
  * Se escribe con los nombres completos ("clientes"."id"): dentro de una subconsulta,
  * un "id" suelto se confundiría con el id del movimiento.
  */
-const balanceSql = sql<number>`coalesce((
+export const balanceSql = sql<number>`coalesce((
   select sum(case when mc.tipo = 'debito' then mc.importe else -mc.importe end)
   from movimientos_cuenta mc where mc.cliente_id = "clientes"."id"
 ), 0)`;

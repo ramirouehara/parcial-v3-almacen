@@ -60,7 +60,7 @@ export async function moverStock(tx: Tx, move: StockMove): Promise<{ id: number;
     const product = await tx.query.productos.findFirst({ where: eq(productos.id, move.productoId) });
     if (!product) throw notFound("El producto");
     throw new ApiError(409, "STOCK_INSUFICIENTE", `No hay stock suficiente de ${product.descripcion}.`, [
-      { productoId: product.id, codigo: product.codigo, disponible: product.existencia, pedido: -move.cantidad },
+      { productoId: product.id, codigo: product.codigo, solicitado: -move.cantidad, disponible: product.existencia },
     ]);
   }
 

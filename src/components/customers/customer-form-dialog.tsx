@@ -89,6 +89,9 @@ function CustomerForm({ customer, onDone }: { customer?: PublicCustomer; onDone:
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    // El diálogo se abre también DENTRO del formulario de Nueva venta: sin esto, el
+    // "submit" seguiría subiendo por el árbol de React y confirmaría la venta.
+    event.stopPropagation();
     if (editing) {
       await form.submit((values) => updateCustomerAction(customer.id, values), {
         success: "Cliente actualizado.",

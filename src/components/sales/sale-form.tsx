@@ -128,8 +128,8 @@ export function SaleForm() {
     // 2) El servidor vuelve a verificar todo y graba la factura en una transacción.
     setPending(true);
     const result = await apiFetch<PublicInvoice>("/api/facturas", { method: "POST", body });
-    setPending(false);
     if (!result.ok) {
+      setPending(false); // solo si falló: si salió bien, el botón sigue bloqueado hasta cambiar de pantalla
       toast.error(result.error.message);
       // Si otro vendedor se llevó stock en el medio, se actualiza lo disponible de cada renglón.
       if (result.error.code === "STOCK_INSUFICIENTE" && Array.isArray(result.error.details)) {
@@ -147,6 +147,7 @@ export function SaleForm() {
       }
       return;
     }
+    // Sin setPending(false): un segundo Enter mientras se cambia de pantalla no emite otra factura igual.
     toast.success(`Factura ${result.data.numeroFormateado} emitida.`);
     router.push(`/ventas/${result.data.id}`);
   }

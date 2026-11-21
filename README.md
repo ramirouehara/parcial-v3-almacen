@@ -8,7 +8,7 @@ Segundo parcial de Programación IV. Sistema web para un almacén de barrio: fac
 - Uehara Martorell, Ramiro
 - Blanca, Leandro Ezequiel
 
-**URL pública:** _se completa al publicar en Vercel_
+**URL pública:** <https://parcial-v3-almacen.vercel.app>
 
 ## Qué hace
 

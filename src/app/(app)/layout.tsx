@@ -11,5 +11,14 @@ import { requirePageUser } from "@/lib/sesion";
  */
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const user = await requirePageUser();
-  return <AppShell user={user}>{children}</AppShell>;
+  return (
+    <AppShell user={user}>
+      {children}
+      <p className="pointer-events-none fixed right-3 bottom-2 z-10 rounded-md bg-background/90 px-2 py-1 text-right text-xs text-muted-foreground shadow-sm">
+        Grupo 21 · Comisión C3
+        <br />
+        Parras Mateo · Uehara Martorell Ramiro · Blanca Leandro Ezequiel
+      </p>
+    </AppShell>
+  );
 }
